@@ -1,0 +1,637 @@
+<div class="workspace">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="CasePulse home">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-name">Case<span>Pulse</span></span>
+    </a>
+    <div class="workspace-label">ePx</div>
+    <nav aria-label="Main navigation">
+      <a class="nav-item" [class.active]="!dashboardView && !teamWorkloadView && !documentationView && !reportsView" href="/" (click)="$event.preventDefault(); showCases()" [attr.aria-current]="!dashboardView && !teamWorkloadView && !documentationView && !reportsView ? 'page' : null">
+        <svg class="nav-icon cases-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><rect x="4" y="2.5" width="12" height="15" rx="2"></rect><path d="M7 7h6M7 10h6M7 13h4"></path></svg>
+        <span>Salesforce Case Tracker</span>
+      </a>
+      <a class="nav-item" [class.active]="dashboardView" href="/dashboard" (click)="$event.preventDefault(); showDashboard()" [attr.aria-current]="dashboardView ? 'page' : null">
+        <svg class="nav-icon dashboard-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 16.5h14M4.5 14V9.5h3V14M9 14V4.5h3V14M13.5 14V7h3v7"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" [class.active]="teamWorkloadView" href="/team-workload" (click)="$event.preventDefault(); showTeamWorkload()" [attr.aria-current]="teamWorkloadView ? 'page' : null">
+        <svg class="nav-icon people-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="2.5"></circle><circle cx="14" cy="7" r="2"></circle><path d="M2.5 16v-1.5A4.5 4.5 0 0 1 7 10a4.5 4.5 0 0 1 4.5 4.5V16M12 11a3.5 3.5 0 0 1 5.5 2.9V16"></path></svg>
+        <span>Team workload</span>
+      </a>
+      <a class="nav-item" [class.active]="documentationView" href="/documentation" (click)="$event.preventDefault(); showDocumentation()" [attr.aria-current]="documentationView ? 'page' : null">
+        <svg class="nav-icon documentation-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M5 2.5h7l3 3V17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1Z"></path><path d="M12 2.5V6h3M7 9h6M7 12h6M7 15h4"></path></svg>
+        <span>Documentation</span>
+      </a>
+      <a class="nav-item" [class.active]="reportsView" href="/reports" (click)="$event.preventDefault(); showReports()" [attr.aria-current]="reportsView ? 'page' : null">
+        <svg class="nav-icon reports-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 16.5h14M4.5 14V9.5h3V14M9 14V5h3v9M13.5 14V7h3v7"></path></svg>
+        <span>Reports</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="database-card">
+        <div class="database-topline"><span class="database-dot" [class.online]="databaseState === 'connected'" [class.offline]="databaseState === 'disconnected'"></span><span>POSTGRESQL</span></div>
+        <strong>{{ databaseState === 'connected' ? 'Connected' : databaseState === 'checking' ? 'Checking connection' : 'Not connected' }}</strong>
+        <span class="database-caption">{{ databaseState === 'connected' ? 'case_insights' : 'Configure your local database' }}</span>
+      </div>
+      <div class="sidebar-foot"><span class="avatar">DM</span><span><strong>DevOps Metrics</strong><small>Local workspace</small></span><span class="more"></span></div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="breadcrumb"><span>ePx</span><span class="crumb-divider">/</span><strong>{{ documentationView ? 'Documentation' : reportsView ? 'Reports' : teamWorkloadView ? 'Team workload' : dashboardView ? 'Dashboard' : riskSummaryView ? 'Risk Summary' : 'Salesforce Case Tracker' }}</strong></div>
+      <div class="topbar-right"><span class="live-label"><span class="live-dot"></span>LIVE DATA</span><span class="topbar-divider"></span><span class="today-label">{{ todayLabel }}</span></div>
+    </header>
+    <div class="page-content">
+      @if (documentationView) {
+      <section class="page-heading documentation-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONS GUIDE</div><h1>Deployment documentation</h1><p class="page-subtitle">A step-by-step guide to prepare an Amazon EC2 server, configure PostgreSQL, publish the CasePulse frontend, and keep the API running.</p></div>
+        <a class="button button-secondary" href="#ec2-prerequisites">Start at step 1</a>
+      </section>
+      <div class="documentation-layout">
+        <nav class="documentation-toc" aria-label="Documentation contents">
+          <strong>IN THIS GUIDE</strong>
+          <a href="#ec2-prerequisites">1. Before you start</a>
+          <a href="#ec2-instance">2. Create the EC2 instance</a>
+          <a href="#ec2-install">3. Install software</a>
+          <a href="#ec2-postgres">4. Set up PostgreSQL</a>
+          <a href="#ec2-folders">5. Create folders and deploy code</a>
+          <a href="#ec2-config">6. Configure the application</a>
+          <a href="#ec2-api">7. Run the API with systemd</a>
+          <a href="#ec2-nginx">8. Publish the frontend</a>
+          <a href="#ec2-https">9. DNS and HTTPS</a>
+          <a href="#ec2-verify">10. Verify and import data</a>
+          <a href="#ec2-maintain">11. Updates, backup, and support</a>
+          <a href="#ec2-security">Security checklist</a>
+        </nav>
+        <article class="documentation-content">
+          <aside class="doc-callout doc-warning"><strong>Important security note</strong><p>CasePulse does not currently provide user sign-in or role-based access. Do not expose it to the public internet with sensitive case data unless access is protected (for example, by a VPN or an authenticated gateway) and your organization has approved that access. Never open PostgreSQL port 5432 or the API port 3000 to the internet.</p></aside>
+
+          <section id="ec2-prerequisites" class="doc-section">
+            <span class="doc-step">GET READY</span><h2>1. Before you start</h2>
+            <p>This guide uses <strong>Amazon Linux 2023</strong>, one EC2 instance running Nginx, the Node.js API, and local PostgreSQL. Nginx serves the compiled Angular app and forwards <code>/api</code> requests to Node on the same machine.</p>
+            <ul><li>AWS account with permission to create EC2, security groups, DNS records, and (if using HTTPS) an Application Load Balancer and ACM certificate.</li><li>A Git repository URL that the EC2 instance can access, or an approved way to upload a release archive.</li><li>A DevOps CSV/XLSX workbook with the exact headers documented in the app's import flow.</li><li>A domain name if you want a stable public URL and HTTPS.</li></ul>
+            <div class="doc-architecture"><strong>Traffic flow</strong><span>Browser  HTTPS gateway / Nginx  Angular static files</span><span>Browser  Nginx <code>/api</code> proxy  Node.js API  PostgreSQL on localhost</span></div>
+          </section>
+
+          <section id="ec2-instance" class="doc-section">
+            <span class="doc-step">AWS CONSOLE</span><h2>2. Create and secure the EC2 instance</h2>
+            <ol><li>In AWS Console, open <strong>EC2  Launch instance</strong>. Choose Amazon Linux 2023 (64-bit x86) and a size approved for your expected data and traffic; a small instance is suitable only for a trial.</li><li>Create or select a key pair and keep the private key somewhere secure on your workstation. Do not upload it to the source repository or EC2 application folder.</li><li>Place the instance in the network/subnet approved for your organization. Allocate an Elastic IP if you need a stable address without a load balancer.</li><li>Create a security group with inbound SSH (TCP 22) restricted to your current trusted IP/CIDR only. For direct Nginx access, allow HTTP (TCP 80) and HTTPS (TCP 443) only from the intended clients. If using an ALB, allow 80/443 from the ALB security group instead. Do not add inbound rules for 3000 or 5432.</li><li>Launch the instance and note its public DNS name or Elastic IP.</li></ol>
+            <p>From Windows PowerShell, connect using your downloaded key (replace the sample path and host):</p>
+            <pre><code>ssh -i "$HOME\Downloads\casepulse-ec2.pem" ec2-user@YOUR_EC2_PUBLIC_DNS</code></pre>
+          </section>
+
+          <section id="ec2-install" class="doc-section">
+            <span class="doc-step">ON EC2  AS <code>ec2-user</code></span><h2>3. Install the required software</h2>
+            <p>Update packages, then install Node.js 22 (supported by this Angular project), npm, Git, Nginx, and PostgreSQL 15:</p>
+            <pre><code>sudo dnf update -y
+sudo dnf install -y nodejs22 nodejs22-npm git nginx postgresql15 postgresql15-server
+node --version
+npm --version
+psql --version
+nginx -v</code></pre>
+            <p>Amazon Linux names the Node 22 packages <code>nodejs22</code> and <code>nodejs22-npm</code>. Confirm the active version is supported by the Angular CLI before building.</p>
+          </section>
+
+          <section id="ec2-postgres" class="doc-section">
+            <span class="doc-step">ON EC2  POSTGRESQL</span><h2>4. Initialize PostgreSQL and create the app database</h2>
+            <p>Initialize the database cluster once, then start PostgreSQL now and on boot:</p>
+            <pre><code>sudo postgresql-setup --initdb
+sudo systemctl enable --now postgresql
+sudo systemctl status postgresql --no-pager</code></pre>
+            <p>Create a dedicated database owner. Enter the interactive PostgreSQL prompt first:</p>
+            <pre><code>sudo -u postgres psql</code></pre>
+            <p>At the <code>postgres=#</code> prompt, run these SQL/psql commands. Choose a strong unique password when prompted by <code>\password</code>; do not put it in shell history.</p>
+            <pre><code>CREATE ROLE casepulse_app LOGIN;
+\password casepulse_app
+CREATE DATABASE casepulse OWNER casepulse_app;
+\q</code></pre>
+            <p>The API runs the project's <code>backend/schema.sql</code> migration when it first connects. That migration creates the <code>DevOps_SF_Summary</code> schema and required tables (including case and risk data, resources, and team activities). Do not manually create alternate workbook columns.</p>
+          </section>
+
+          <section id="ec2-folders" class="doc-section">
+            <span class="doc-step">ON EC2  APPLICATION FILES</span><h2>5. Create the folders and deploy the code</h2>
+            <p>Use one owned directory for the checkout and generated frontend files. The confidential <code>.env</code> stays in the app directory, is never committed, and must be readable only by the service account.</p>
+            <pre><code>/opt/casepulse/
+ app/
+     backend/
+        server.js
+        schema.sql
+     dist/
+        case-pulse/
+            browser/       # generated by npm run build
+     src/                   # frontend source
+     package.json
+     package-lock.json
+     .env                   # secrets; never commit or publish</code></pre>
+            <p>Create the parent folder and transfer ownership to the standard EC2 account:</p>
+            <pre><code>sudo mkdir -p /opt/casepulse
+sudo chown ec2-user:ec2-user /opt/casepulse</code></pre>
+            <p>Clone your authorized repository (replace the placeholder with your repository URL):</p>
+            <pre><code>git clone YOUR_GIT_REPOSITORY_URL /opt/casepulse/app
+cd /opt/casepulse/app
+npm ci
+npm run build</code></pre>
+            <p>For a private repository, configure approved read-only Git access for this instance; do not paste access tokens into the clone URL or commit them. Confirm the static output exists:</p>
+            <pre><code>ls -la /opt/casepulse/app/dist/case-pulse/browser</code></pre>
+          </section>
+
+          <section id="ec2-config" class="doc-section">
+            <span class="doc-step">ON EC2  PRIVATE CONFIGURATION</span><h2>6. Configure the environment</h2>
+            <p>Copy the template and edit the production values. Use <code>nano</code> or your approved editor; replace placeholders and save:</p>
+            <pre><code>cd /opt/casepulse/app
+cp .env.example .env
+nano .env</code></pre>
+            <p>Set at least these values (use the database password created in step 4 and your real browser origin):</p>
+            <pre><code>API_PORT=3000
+PGHOST=127.0.0.1
+PGPORT=5432
+PGDATABASE=casepulse
+PGUSER=casepulse_app
+PGPASSWORD=REPLACE_WITH_YOUR_STRONG_DATABASE_PASSWORD
+PGSSL=false
+PGSCHEMA=DevOps_SF_Summary
+CORS_ORIGIN=https://YOUR_APP_DOMAIN</code></pre>
+            <p>For temporary testing over HTTP, use <code>http://YOUR_EC2_PUBLIC_DNS</code> as the origin and change it to the final HTTPS origin when configured. Keep PostgreSQL bound to localhost. Lock down the file and verify ownership:</p>
+            <pre><code>chmod 600 /opt/casepulse/app/.env
+chown ec2-user:ec2-user /opt/casepulse/app/.env</code></pre>
+            <p>Do not paste the real password into chat, documentation, Git, or diagnostic output. Do not enable <code>PGSSL</code> for local loopback PostgreSQL; use verified TLS settings if the database is remote.</p>
+          </section>
+
+          <section id="ec2-api" class="doc-section">
+            <span class="doc-step">ON EC2  START ON BOOT</span><h2>7. Run the Node API as a systemd service</h2>
+            <p>Create a service file:</p>
+            <pre><code>sudo nano /etc/systemd/system/casepulse-api.service</code></pre>
+            <p>Paste this unit, then save:</p>
+            <pre><code>[Unit]
+Description=CasePulse Node.js API
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/casepulse/app
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /opt/casepulse/app/backend/server.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+            <p>Enable and start it, then check the service and API health endpoint. The health check also triggers the schema migration:</p>
+            <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable --now casepulse-api
+sudo systemctl status casepulse-api --no-pager
+curl -i http://127.0.0.1:3000/api/health</code></pre>
+            <p>Expect an HTTP 200 response indicating the database connection is healthy. If not, inspect logs with <code>sudo journalctl -u casepulse-api -n 100 --no-pager</code> and resolve the database/configuration error before proceeding.</p>
+          </section>
+
+          <section id="ec2-nginx" class="doc-section">
+            <span class="doc-step">ON EC2  WEB SERVER</span><h2>8. Publish Angular with Nginx</h2>
+            <p>Create a site configuration:</p>
+            <pre><code>sudo nano /etc/nginx/conf.d/casepulse.conf</code></pre>
+            <p>Paste the following configuration. Replace the server name with your DNS name, or use the instance public DNS for a smoke test:</p>
+            <pre><code>server {{ '{' }}
+    listen 80;
+    server_name YOUR_APP_DOMAIN;
+    root /opt/casepulse/app/dist/case-pulse/browser;
+    index index.html;
+
+    location /api/ {{ '{' }}
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    {{ '}' }}
+
+    location / {{ '{' }}
+        try_files $uri $uri/ /index.html;
+    {{ '}' }}
+{{ '}' }}</code></pre>
+            <p>Validate the configuration and enable Nginx:</p>
+            <pre><code>sudo nginx -t
+sudo systemctl enable --now nginx
+sudo systemctl reload nginx</code></pre>
+            <p>The SPA fallback serves Angular routes; the API proxy keeps port 3000 private. If Nginx cannot read the build files, check directory execute permissions and file read permissions along <code>/opt/casepulse/app/dist</code>.</p>
+          </section>
+
+          <section id="ec2-https" class="doc-section">
+            <span class="doc-step">AWS CONSOLE  PRODUCTION ACCESS</span><h2>9. Point DNS and enable HTTPS</h2>
+            <ol><li>Create a DNS record for your app domain pointing to the Elastic IP, or create an Application Load Balancer and point DNS to its name.</li><li>For production, terminate HTTPS with an Application Load Balancer and an ACM certificate for your domain. Validate the certificate, configure an HTTPS listener on port 443 to forward to the instance target group on port 80, and enable an HTTP-to-HTTPS redirect.</li><li>Restrict the EC2 security group so web traffic to port 80 comes only from the ALB security group; keep SSH restricted to trusted administrator IPs. Do not expose the API or database ports.</li><li>Update <code>CORS_ORIGIN</code> in <code>.env</code> to the exact public HTTPS origin, then run <code>sudo systemctl restart casepulse-api</code>.</li><li>Open the HTTPS domain and confirm the browser shows a valid certificate. HTTP-only access is suitable for a short private smoke test, not for a public production deployment.</li></ol>
+          </section>
+
+          <section id="ec2-verify" class="doc-section">
+            <span class="doc-step">SMOKE TEST</span><h2>10. Verify the deployment and load data</h2>
+            <ol><li>From EC2, verify <code>curl -i http://127.0.0.1:3000/api/health</code> returns HTTP 200 and a connected database.</li><li>Verify Nginx responds with the app: <code>curl -I http://127.0.0.1/</code>. Then open the public HTTPS address in a browser.</li><li>Check the PostgreSQL status badge in the left sidebar. If disconnected, inspect both the API and PostgreSQL service logs.</li><li>Import the approved case workbook in the Salesforce Case Tracker. Use the Risks toggle to import Risk Summary rows to their separate table. The case workbook must have the exact 14 headers and order; Risk Summary uses its exact 10 headers and order.</li><li>Apply filters, open Dashboard and Team workload, and test XLSX export. Confirm that records remain after refreshing the page.</li></ol>
+            <p>Keep the workbook headers and order unchanged. Importing or exporting different column layouts can cause validation failures; the risk-summary schema migration can recreate a mismatched risk table and remove its rows.</p>
+          </section>
+
+          <section id="ec2-maintain" class="doc-section">
+            <span class="doc-step">OPERATIONS</span><h2>11. Updates, backups, and useful commands</h2>
+            <h3>Deploy an update</h3>
+            <p>Run as <code>ec2-user</code> after reviewing the release and any database migration:</p>
+            <pre><code>cd /opt/casepulse/app
+git pull --ff-only
+npm ci
+npm run build
+sudo systemctl restart casepulse-api
+sudo nginx -t
+sudo systemctl reload nginx
+curl -i http://127.0.0.1:3000/api/health</code></pre>
+            <h3>Back up PostgreSQL</h3>
+            <p>Use an approved secure backup destination and retention policy. The following writes a database dump to a protected local folder; copy it off-instance using your approved encrypted backup process:</p>
+            <pre><code>sudo install -d -m 700 -o ec2-user -g ec2-user /opt/casepulse/backups
+nano /home/ec2-user/.pgpass
+chmod 600 /home/ec2-user/.pgpass
+export PGPASSFILE=/home/ec2-user/.pgpass
+pg_dump -h 127.0.0.1 -U casepulse_app -Fc casepulse -f /opt/casepulse/backups/casepulse-$(date +%F).dump</code></pre>
+            <p>Put the database credentials in the protected password file using the format <code>127.0.0.1:5432:casepulse:casepulse_app:YOUR_DATABASE_PASSWORD</code>. Do not put a real password in the command or shell history. Prefer an approved secrets manager for scheduled backups. Test restoring a backup into a separate database before relying on it.</p>
+            <h3>Service status and logs</h3>
+            <pre><code>sudo systemctl status casepulse-api nginx postgresql --no-pager
+sudo journalctl -u casepulse-api -n 100 --no-pager
+sudo tail -n 100 /var/log/nginx/error.log</code></pre>
+            <div class="doc-callout"><strong>Production change control</strong><p>Before updating dependencies or schema, take a database backup, review the change, deploy to a test environment where possible, then verify health and workbook import/export after release.</p></div>
+          </section>
+
+          <section id="ec2-security" class="doc-section">
+            <span class="doc-step">FINAL CHECK</span><h2>Security checklist</h2>
+            <ul><li>Restrict SSH to trusted administrator addresses; use key-based access and rotate/revoke access when needed.</li><li>Do not allow inbound internet access to TCP 3000 or 5432. Bind PostgreSQL to loopback for this single-instance deployment.</li><li>Use HTTPS and an authenticated access boundary before storing or displaying real case data; the application itself has no login.</li><li>Keep <code>.env</code>, private keys, database dumps, and repository credentials out of Git, the web root, and public logs. Restrict file permissions.</li><li>Apply OS and dependency updates, monitor disk space and service health, and maintain tested encrypted backups off the instance.</li><li>Grant the database role only the permissions needed by the API. Review AWS IAM role permissions and avoid long-lived cloud keys on the instance.</li></ul>
+          </section>
+        </article>
+      </div>
+      <footer class="page-footer"><span>CASEPULSE <span></span> DEPLOYMENT DOCUMENTATION</span><span>Review security and backup requirements before production use</span></footer>
+      } @else if (reportsView) {
+      <section class="page-heading reports-page-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONAL REPORTING</div><h1>Reports</h1><p class="page-subtitle">Invoice delivery and patient activity, organized for a clear period-by-period review.</p></div>
+        <div class="heading-actions report-actions">
+          <button class="button button-secondary" type="button" disabled title="Import will be enabled after the report workbook columns are mapped"><span class="button-icon upload-icon" aria-hidden="true"></span>Import CSV / Excel</button>
+          <button class="button button-primary" type="button" disabled title="Export will be enabled after the report workbook columns are mapped"><span class="button-icon download-icon" aria-hidden="true"></span>{{ selectedReportTab === 'patients' ? 'Export all patient details' : 'Export report' }}</button>
+        </div>
+      </section>
+
+      <section class="report-period-panel" aria-label="Required report date range">
+        <div class="report-period-copy"><span class="report-period-icon" aria-hidden="true"></span><div><strong>Choose a reporting period</strong><span>Both dates are required before report data can be viewed.</span></div></div>
+        <div class="report-period-controls">
+          <label><span>FROM DATE</span><input type="date" required aria-label="Report start date" [(ngModel)]="reportDateFrom" (ngModelChange)="reportRangeApplied = false; reportRangeError = ''" [max]="reportDateTo || null" /></label>
+          <span class="report-date-separator" aria-hidden="true">to</span>
+          <label><span>TO DATE</span><input type="date" required aria-label="Report end date" [(ngModel)]="reportDateTo" (ngModelChange)="reportRangeApplied = false; reportRangeError = ''" [min]="reportDateFrom || null" /></label>
+          <button class="button button-primary report-apply-button" type="button" (click)="applyReportDateRange()">Apply dates</button>
+          <button class="text-button report-clear-button" type="button" (click)="clearReportDateRange()">Clear</button>
+        </div>
+        @if (reportRangeError) { <p class="report-range-error" role="alert">{{ reportRangeError }}</p> }
+      </section>
+
+      <section class="reports-workspace" aria-label="Reports">
+        <div class="report-tabs" role="tablist" aria-label="Report type">
+          @for (tab of reportTabs; track tab.id) {
+            <button class="report-tab" [class.active]="selectedReportTab === tab.id" type="button" role="tab" [attr.aria-selected]="selectedReportTab === tab.id" [attr.aria-controls]="'report-panel-' + tab.id" (click)="selectReportTab(tab.id)">
+              <span>{{ tab.label }}</span><span class="report-tab-count">{{ reportRangeApplied ? tab.count.toLocaleString() : '' }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="report-panel" [id]="'report-panel-' + selectedReportTab" role="tabpanel">
+          @if (!reportRangeApplied) {
+            <div class="report-empty-state"><span class="report-empty-icon" aria-hidden="true"></span><strong>Select both a start date and an end date</strong><p>Choose both a start date and an end date, then apply them to view the report.</p></div>
+          } @else {
+            <div class="report-preview-banner"><span class="report-preview-dot" aria-hidden="true"></span><span><strong>Reference preview</strong>  Illustrative figures supplied for layout review; live report data will replace these after workbook mapping.</span><span class="report-preview-period">{{ formatDate(reportDateFrom) }}  {{ formatDate(reportDateTo) }}</span></div>
+            @if (selectedReportTab === 'invoices') {
+              <div class="report-summary-heading"><div><span class="report-kicker">INVOICE DELIVERY OVERVIEW</span><h2>Total invoices</h2><p>Volume by batch and invoice delivery type</p></div><div class="report-total-value">{{ reportTotalInvoices.toLocaleString() }}<span>invoices</span></div></div>
+              <div class="report-table-scroll">
+                <table class="report-table">
+                  <thead><tr><th scope="col">Batch no. / type of invoices</th><th scope="col">Online  PZ(O)</th><th scope="col">Electronic  E</th><th scope="col">Paper  P</th><th scope="col">Generated / released sites</th></tr></thead>
+                  <tbody>
+                    @for (row of invoiceReportRows; track row.batch) {
+                      <tr><th scope="row"><span class="report-batch-mark"></span>{{ row.batch }}</th><td>{{ row.online.toLocaleString() }}</td><td>{{ row.electronic.toLocaleString() }}</td><td>{{ row.paper.toLocaleString() }}</td><td><strong>{{ row.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr>
+                    }
+                  </tbody>
+                  <tfoot><tr><th scope="row">Total invoices</th><td>{{ invoiceReportTotal.online.toLocaleString() }}</td><td>{{ invoiceReportTotal.electronic.toLocaleString() }}</td><td>{{ invoiceReportTotal.paper.toLocaleString() }}</td><td><strong>{{ invoiceReportTotal.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr></tfoot>
+                </table>
+              </div>
+              <div class="report-table-foot"><span>Invoices across all batches</span><strong>{{ reportTotalInvoices.toLocaleString() }} total</strong></div>
+            } @else if (selectedReportMetric; as metric) {
+              <div class="report-summary-heading metric-report-heading"><div><span class="report-kicker">PATIENT ACTIVITY OVERVIEW</span><h2>{{ metric.label }}</h2><p>{{ selectedReportTab === 'patients' ? 'Unique patient records in the selected period' : selectedReportTab === 'appointments' ? 'Appointments recorded in the selected period' : 'Clinic notes recorded in the selected period' }}</p></div><div class="report-total-value">{{ metric.count.toLocaleString() }}<span>{{ selectedReportTab === 'patients' ? 'patients' : selectedReportTab === 'appointments' ? 'appointments' : 'clinic notes' }}</span></div></div>
+              <div class="report-detail-prompt"><span class="report-detail-icon" aria-hidden="true"></span><div><strong>{{ selectedReportTab === 'patients' ? 'Patient detail export' : 'Record-level detail' }}</strong><p>{{ selectedReportTab === 'patients' ? 'Export will include every patient detail row for the selected date range.' : 'Record-level rows will be available in the selected report export.' }} Workbook column mapping is required to load source records.</p></div></div>
+            }
+          }
+        </div>
+      </section>
+      <footer class="page-footer"><span>CASEPULSE <span></span> REPORTS</span><span>Choose a date range to view report data</span></footer>
+      } @else {
+      <section class="page-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span>{{ teamWorkloadView ? 'TEAM ACTIVITIES' : dashboardView ? 'CASE DASHBOARD' : riskSummaryView ? 'VULNARABILITIES' : 'SALESFORCE' }}</div><h1>{{ teamWorkloadView ? 'Team workload' : dashboardView ? 'Case Dashboard' : riskSummaryView ? 'Risk Summary' : 'Case Tracker' }}</h1><p class="page-subtitle">{{ teamWorkloadView ? 'Log daily activities, breaks, and working time for each team member.' : dashboardView ? 'Explore trends and breakdowns using the same case filters.' : riskSummaryView ? 'Track security risk work items using the same case filters.' : 'Track case work items and implementation status.' }}</p>@if (dashboardView || teamWorkloadView) { <button type="button" class="quick-filter-button view-toggle" (click)="showCases()">Back to case tracker</button> } @else { <div class="page-view-actions"><button type="button" class="quick-filter-button view-toggle" (click)="showDashboard()">Open Dashboard</button><button type="button" role="switch" class="quick-filter-button risk-toggle" [class.risk-active]="riskSummaryView" [attr.aria-checked]="riskSummaryView" [attr.aria-label]="riskSummaryView ? 'Switch to cases' : 'Switch to risks'" (click)="riskSummaryView ? showCases() : showRiskSummary()"><span class="risk-toggle-track"><span class="risk-toggle-thumb" aria-hidden="true"></span><span class="risk-toggle-option" [class.active]="!riskSummaryView">CASES</span><span class="risk-toggle-option" [class.active]="riskSummaryView">RISKS</span></span></button></div> }</div>
+        @if (!dashboardView && !teamWorkloadView) {
+        <div class="heading-actions">
+          <input #fileInput class="visually-hidden" type="file" accept=".csv,.xlsx" aria-label="Choose a DevOps CSV or Excel file" (change)="importFile($event)" />
+          <button class="button button-secondary" type="button" (click)="chooseFile()" [disabled]="importing"><span class="button-icon upload-icon" aria-hidden="true"></span>{{ importing ? 'Importing...' : 'Import CSV / Excel' }}</button>
+          <button class="button button-primary" type="button" (click)="exportFile()" [disabled]="rows.length === 0 || loading" title="Export the current filtered results"><span class="button-icon download-icon" aria-hidden="true"></span>Export view</button>
+        </div>
+        }
+      </section>
+
+      @if (message) {
+        <div class="notice" [class.notice-success]="messageKind === 'success'" role="status"><span class="notice-mark" aria-hidden="true">{{ messageKind === 'success' ? '' : '!' }}</span><span>{{ message }}</span><button type="button" class="notice-close" aria-label="Dismiss message" (click)="message = ''"></button></div>
+      }
+
+      @if (!teamWorkloadView) {
+      <section class="summary-grid" [attr.aria-label]="riskSummaryView ? 'Filtered risk summary' : 'Filtered case summary'">
+        <article class="summary-card summary-total"><div class="summary-top"><span class="summary-label">WORK ITEMS TILL DATE</span><span class="summary-symbol total-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ total.toLocaleString() }}</div><div class="summary-foot"><span>Matching current filters</span><span class="summary-accent">ALL</span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">IN PROGRESS</span><span class="summary-symbol open-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ openCount.toLocaleString() }}</div><div class="summary-foot"><span>Active states</span><span class="mini-meter"><span [style.width.%]="total ? (openCount / total) * 100 : 0"></span></span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">HIGH PRIORITY</span><span class="summary-symbol priority-symbol" aria-hidden="true">!</span></div><div class="summary-value">{{ priorityCount.toLocaleString() }}</div><div class="summary-foot"><span>Priority 1-2 or high / critical</span><span class="priority-spark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div></article>
+        <button class="summary-card summary-priority-filter" [class.summary-card-selected]="severity.toLowerCase() === 'medium'" type="button" [attr.aria-pressed]="severity.toLowerCase() === 'medium'" (click)="selectPriority('Medium')"><span class="summary-top"><span class="summary-label">MEDIUM PRIORITY</span><span class="summary-symbol areas-symbol" aria-hidden="true"></span></span><span class="summary-value">{{ mediumPriorityCount.toLocaleString() }}</span><span class="summary-foot"><span>Filter medium-priority cases</span></span></button>
+        <button class="summary-card summary-priority-filter" [class.summary-card-selected]="severity.toLowerCase() === 'critical'" type="button" [attr.aria-pressed]="severity.toLowerCase() === 'critical'" (click)="selectPriority('Critical')"><span class="summary-top"><span class="summary-label">CRITICAL PRIORITY</span><span class="summary-symbol priority-symbol" aria-hidden="true">!</span></span><span class="summary-value">{{ criticalPriorityCount.toLocaleString() }}</span><span class="summary-foot"><span>Filter critical-priority cases</span></span></button>
+        <article class="summary-card resolution-card"><div class="summary-top"><span class="summary-label">RESOLUTION RATE</span><span class="summary-symbol resolution-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ resolutionRate.toFixed(1) }}%</div><div class="summary-foot"><span>Delivered to Prod + Done</span><span class="resolution-count">{{ resolutionRateCount }}/{{ total }}</span></div></article>
+      </section>
+      }
+
+      @if (!teamWorkloadView) {
+      <section class="filter-panel" [attr.aria-label]="riskSummaryView ? 'Filter risk summary' : 'Filter Salesforce cases'">
+        <div class="filter-heading"><div class="filter-heading-left"><span class="filter-icon" aria-hidden="true"></span><strong>{{ riskSummaryView ? 'Filter risks' : 'Filter cases' }}</strong><span class="filter-hint">Combine area, tag, ownership, and state filters</span>@if (lastDataRefreshLabel; as lastDataRefresh) { <span class="last-data-refresh" aria-live="polite"><strong>Last Data Refresh</strong><span>{{ lastDataRefresh }}</span></span> }</div><div class="filter-heading-actions"><label class="multi-select-toggle"><input type="checkbox" role="switch" [ngModel]="multiSelect" (ngModelChange)="setMultiSelect($event)" aria-label="Enable multi-select for filters" />Multi-select</label><button type="button" class="text-button" (click)="clearFilters()">Clear all <span aria-hidden="true"></span></button></div></div>
+        <div class="quick-filter-groups">
+          <div class="quick-filter-group" role="group" aria-label="Filter by area path">
+            <span class="quick-filter-label">AREA PATH</span>
+            <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected('Accounting')" [attr.aria-pressed]="isAreaSelected('Accounting')" (click)="selectArea('Accounting')">Accounting</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected('Core')" [attr.aria-pressed]="isAreaSelected('Core')" (click)="selectArea('Core')">Core</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected(prescribingAreaPath)" [attr.aria-pressed]="isAreaSelected(prescribingAreaPath)" (click)="selectArea(prescribingAreaPath)">Prescribing</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected(ep2AreaPath)" [attr.aria-pressed]="isAreaSelected(ep2AreaPath)" (click)="selectArea(ep2AreaPath)">eP2 (Team 4)</button>
+          </div>
+          <div class="quick-filter-group" role="group" aria-label="Filter by tag">
+            <span class="quick-filter-label">TAGS</span>
+            @if (riskSummaryView) {
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('ZeroThreat')" [attr.aria-pressed]="isTagSelected('ZeroThreat')" (click)="selectTag('ZeroThreat')">ZeroThreat</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Pentest 2026')" [attr.aria-pressed]="isTagSelected('Pentest 2026')" (click)="selectTag('Pentest 2026')">Pentest 2026</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('ORCA Scan')" [attr.aria-pressed]="isTagSelected('ORCA Scan')" (click)="selectTag('ORCA Scan')">ORCA Scan</button>
+            } @else {
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('External')" [attr.aria-pressed]="isTagSelected('External')" (click)="selectTag('External')">External</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Datasync')" [attr.aria-pressed]="isTagSelected('Datasync')" (click)="selectTag('Datasync')">Datasync</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Internal')" [attr.aria-pressed]="isTagSelected('Internal')" (click)="selectTag('Internal')">Internal</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('DevFixRequired')" [attr.aria-pressed]="isTagSelected('DevFixRequired')" (click)="selectTag('DevFixRequired')">Code Fix (DevFixRequired)</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch1')" [attr.aria-pressed]="isTagSelected('Batch1')" (click)="selectTag('Batch1')">Batch1</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch2')" [attr.aria-pressed]="isTagSelected('Batch2')" (click)="selectTag('Batch2')">Batch2</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch3')" [attr.aria-pressed]="isTagSelected('Batch3')" (click)="selectTag('Batch3')">Batch3</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch4')" [attr.aria-pressed]="isTagSelected('Batch4')" (click)="selectTag('Batch4')">Batch4</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch5')" [attr.aria-pressed]="isTagSelected('Batch5')" (click)="selectTag('Batch5')">Batch5</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Hospitals')" [attr.aria-pressed]="isTagSelected('Hospitals')" (click)="selectTag('Hospitals')">Hospitals</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Pilot Case')" [attr.aria-pressed]="isTagSelected('Pilot Case')" (click)="selectTag('Pilot Case')">Pilot Case</button>
+            }
+          </div>
+          <div class="quick-filter-group" role="group" aria-label="Filter by ownership">
+            <span class="quick-filter-label">OWNERSHIP</span>
+            <button type="button" class="quick-filter-button" [class.selected]="isOwnershipSelected('Developer')" [attr.aria-pressed]="isOwnershipSelected('Developer')" (click)="selectOwnership('Developer')">Developer</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isOwnershipSelected('QA')" [attr.aria-pressed]="isOwnershipSelected('QA')" (click)="selectOwnership('QA')">QA</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isOwnershipSelected('App Support')" [attr.aria-pressed]="isOwnershipSelected('App Support')" (click)="selectOwnership('App Support')">App Support</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isOwnershipSelected('Unassigned')" [attr.aria-pressed]="isOwnershipSelected('Unassigned')" (click)="selectOwnership('Unassigned')">Unassigned</button>
+          </div>
+          <div class="quick-filter-group" role="group" aria-label="Filter by state">
+            <span class="quick-filter-label">STATE</span>
+            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'resolved'" [attr.aria-pressed]="stateFilter === 'resolved'" (click)="selectState('resolved')">Resolved / Closed</button>
+            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'opened'" [attr.aria-pressed]="stateFilter === 'opened'" (click)="selectState('opened')">Opened</button>
+            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'awaitingImplementation'" [attr.aria-pressed]="stateFilter === 'awaitingImplementation'" (click)="selectState('awaitingImplementation')">Awaiting Implementation</button>
+          </div>
+        </div>
+        <div class="filter-fields">
+          <fieldset class="filter-control age-control"><legend>CREATED AGE <span class="unit">DAYS</span></legend><div class="age-inputs"><input type="number" min="0" [(ngModel)]="ageMinDays" placeholder="Min" aria-label="Minimum age in days" /><span>to</span><input type="number" min="0" [(ngModel)]="ageMaxDays" placeholder="Max" aria-label="Maximum age in days" /></div></fieldset>
+          <label class="filter-control"><span>SEVERITY / PRIORITY</span><input type="text" [(ngModel)]="severity" placeholder="e.g. High, 1" (keydown.enter)="applyFilters()" /></label>
+          <label class="filter-control tags-control"><span>TAGS</span><input type="text" [ngModel]="riskSummaryView ? riskSummaryTags : tags" (ngModelChange)="setTagFilter($event)" [placeholder]="riskSummaryView ? 'ORCA Scan, Pentest 2026, ZeroThreat...' : 'Batch1, Hospitals, Pilot Case...'" (keydown.enter)="applyFilters()" /></label>
+          <label class="filter-control assigned-control"><span>ASSIGNED TO</span><input type="text" [(ngModel)]="assignedTo" placeholder="Name or email" (keydown.enter)="applyFilters()" /></label>
+          <button type="button" class="apply-button" (click)="applyFilters()" [disabled]="loading"><span class="search-icon" aria-hidden="true"></span>Apply</button>
+        </div>
+      </section>
+      }
+
+      @if (dashboardView) {
+        <section class="dashboard-section" aria-label="Case dashboard charts">
+          <div class="dashboard-toolbar">
+            <div><h2>Case trends</h2><span>{{ total.toLocaleString() }} cases match the selected filters</span></div>
+            <div class="date-range">
+              <label class="date-filter-control"><span>START DATE</span><input type="date" [(ngModel)]="dateFrom" (change)="applyFilters()" aria-label="Dashboard start date" /></label>
+              <label class="date-filter-control"><span>END DATE</span><input type="date" [(ngModel)]="dateTo" (change)="applyFilters()" aria-label="Dashboard end date" /></label>
+              @if (dateFrom || dateTo) { <button class="text-button clear-date-button" type="button" (click)="clearDateRange()">Clear dates</button> }
+              <button class="button button-primary print-button" type="button" (click)="printDashboard()" [disabled]="dateRangeInvalid" title="Print charts or save the report as a PDF"><span class="print-button-icon" aria-hidden="true"></span>Print / Save PDF</button>
+            </div>
+          </div>
+          <header class="print-report-header">
+            <div class="print-brand"><span class="print-brand-mark">C</span><span><strong>CasePulse</strong><small>Salesforce Case Tracker</small></span></div>
+            <div class="print-report-title"><span>RISK SUMMARY REPORT</span><h1>Case Dashboard</h1></div>
+            <div class="print-report-meta"><strong>{{ todayLabel }}</strong><span>{{ total.toLocaleString() }} matching cases</span></div>
+            <p class="print-filter-summary">{{ printFilterSummary }}</p>
+          </header>
+          <div class="chart-scope" role="status"><span aria-hidden="true"></span>{{ monthlyScopeLabel }}<strong>{{ total.toLocaleString() }} cases</strong></div>
+          @if (dateRangeInvalid) {
+            <div class="notice" role="alert">Start date must be on or before end date.</div>
+          } @else {
+            <div class="chart-grid">
+              <article class="chart-card monthly-chart-card">
+                <div class="chart-heading"><div><h3>{{ monthlyTrendTitle }}</h3><p>Monthly case creation trend</p></div><div class="chart-heading-metrics"><strong>{{ monthlyChart.length }} months</strong><small>Peak {{ monthlyPeak?.label ?? '' }} - {{ monthlyPeak?.count ?? 0 }} | Avg {{ monthlyAverage }}</small></div></div>
+                @if (monthlyChart.length) {
+                  <div class="chart-overflow">
+                    <svg class="trend-chart" [attr.viewBox]="'0 0 ' + monthlyChartWidth + ' 236'" role="img" aria-label="Monthly case creation trend, line chart">
+                      <defs><linearGradient id="trend-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#6da27c" stop-opacity=".28" /><stop offset="100%" stop-color="#6da27c" stop-opacity=".02" /></linearGradient></defs>
+                      @for (tick of monthlyChartTicks; track tick.value) {
+                        <line class="chart-gridline" x1="68" [attr.y1]="tick.y" [attr.x2]="monthlyChartAxisRight" [attr.y2]="tick.y" />
+                        <text class="axis-value" x="58" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.value }}</text>
+                      }
+                      <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text>
+                      <polygon class="trend-area" [attr.points]="monthlyTrendAreaPoints" />
+                      <polyline class="trend-line" [attr.points]="monthlyTrendPoints" />
+                      @for (point of monthlyChart; track point.label) {
+                        <circle class="trend-point" [attr.cx]="point.x" [attr.cy]="point.y" r="5"><title>{{ point.label }}: {{ point.count }} cases</title></circle>
+                        <text class="month-label" [attr.x]="point.x" y="211" text-anchor="middle">{{ point.label }}</text>
+                        <text class="point-value" [attr.x]="point.x" [attr.y]="point.y - 10" text-anchor="middle">{{ point.count }}</text>
+                      }
+                    </svg>
+                  </div>
+                } @else { <p class="chart-empty">No dated cases match these filters.</p> }
+                <section class="print-only chart-report-summary" aria-label="Monthly trend summary">
+                  <h4>What this graph shows</h4><p>{{ monthlyPrintSummary }}</p>
+                  <div class="print-detail-grid">
+                    @for (item of monthlyPrintDetails; track item.label) {
+                      <div><span>{{ item.label }}</span><strong>{{ item.count }} cases</strong><small>{{ item.percent }}</small></div>
+                    }
+                  </div>
+                </section>
+              </article>
+              <article class="chart-card monthly-chart-card">
+                <div class="chart-heading"><div><h3>{{ monthlyVolumeTitle }}</h3><p>Bar view  exact count per month</p></div><strong>{{ monthlyTotal }} cases</strong></div>
+                @if (monthlyChart.length) {
+                  <div class="chart-overflow">
+                    <svg class="monthly-bars" [attr.viewBox]="'0 0 ' + monthlyChartWidth + ' 236'" role="img" aria-label="Bar chart of cases created per month">
+                      @for (tick of monthlyChartTicks; track tick.value) {
+                        <line class="chart-gridline" x1="68" [attr.y1]="tick.y" [attr.x2]="monthlyChartAxisRight" [attr.y2]="tick.y" />
+                        <text class="axis-value" x="58" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.value }}</text>
+                      }
+                      <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text>
+                      @for (bar of monthlyBarRects; track bar.label) {
+                        <rect class="monthly-bar" [attr.x]="bar.rectX" [attr.y]="bar.rectY" [attr.width]="bar.rectWidth" [attr.height]="bar.rectHeight" rx="3"><title>{{ bar.label }}: {{ bar.count }} cases</title></rect>
+                        <text class="point-value" [attr.x]="bar.x" [attr.y]="bar.rectY - 7" text-anchor="middle">{{ bar.count }}</text>
+                        <text class="month-label" [attr.x]="bar.x" y="211" text-anchor="middle">{{ bar.label }}</text>
+                      }
+                    </svg>
+                  </div>
+                } @else { <p class="chart-empty">No dated cases match these filters.</p> }
+                <section class="print-only chart-report-summary" aria-label="Monthly volume summary">
+                  <h4>Monthly breakdown</h4><p>{{ monthlyPrintSummary }}</p>
+                  <div class="print-detail-grid">
+                    @for (item of monthlyPrintDetails; track item.label) {
+                      <div><span>{{ item.label }}</span><strong>{{ item.count }} cases</strong><small>{{ item.percent }}</small></div>
+                    }
+                  </div>
+                </section>
+              </article>
+              <article class="chart-card">
+                <h3>{{ stateChartTitle }}</h3>
+                @if (stateChart.length) {
+                  <div class="bar-list">@for (item of stateChart; track item.label) {
+                    <div class="bar-row"><span>{{ item.label }}</span><span class="bar-track"><i [style.width.%]="item.percent" [style.backgroundColor]="item.color"></i></span><strong>{{ item.value }}</strong></div>
+                  }</div>
+                } @else { <p class="chart-empty">No cases match these filters.</p> }
+                <section class="print-only chart-report-summary" aria-label="State distribution summary">
+                  <h4>State analysis</h4><p>{{ statePrintSummary }}</p>
+                  <div class="print-detail-grid">
+                    @for (item of statePrintDetails; track item.label) {
+                      <div><span>{{ item.label }}</span><strong>{{ item.count }} cases</strong><small>{{ item.percent }}</small></div>
+                    }
+                  </div>
+                </section>
+              </article>
+              <article class="chart-card batch-resolution-card">
+                <div class="chart-heading"><div><h3>Batch resolution rate</h3><p>Delivered to Prod + Done by batch</p></div><strong>{{ batchResolutionChart.length }} batches</strong></div>
+                @if (batchResolutionChart.length) {
+                  <div class="batch-resolution-list" role="list" aria-label="Batch-wise resolution rates">
+                    @for (batch of batchResolutionChart; track batch.label) {
+                      <div class="batch-resolution-row" role="listitem">
+                        <div class="batch-resolution-label"><span>{{ batch.label }}</span><strong>{{ batch.rate.toFixed(1) }}%</strong><small>{{ batch.resolved }}/{{ batch.total }} resolved</small></div>
+                        <div class="batch-resolution-track" role="meter" [attr.aria-label]="batch.label + ' resolution rate'" [attr.aria-valuenow]="batch.rate" aria-valuemin="0" aria-valuemax="100"><i [style.width.%]="batch.rate" [style.backgroundColor]="batch.color"></i></div>
+                      </div>
+                    }
+                  </div>
+                } @else { <p class="chart-empty">No batch tags match these filters.</p> }
+              </article>              <article class="chart-card">
+                <div class="chart-heading"><div><h3>{{ priorityChartTitle }}</h3><p>Priority distribution for filtered cases</p></div><strong>{{ resolutionRate.toFixed(1) }}% resolved</strong></div>
+                <div class="priority-chart" role="img" [attr.aria-label]="'Priority distribution with a resolution rate of ' + resolutionRate.toFixed(1) + ' percent. ' + priorityChart.map(item => item.label + ': ' + item.value + ' cases, ' + item.percent.toFixed(1) + ' percent').join('. ')+'.'">
+                  <div class="priority-donut-wrap">
+                    <svg class="priority-donut" viewBox="0 0 184 184" aria-hidden="true">
+                      <circle cx="92" cy="92" r="70" class="priority-donut-base" />
+                      @for (segment of priorityDonutSegments; track segment.label) {
+                        <circle cx="92" cy="92" r="70" fill="none" [attr.stroke]="segment.color" [attr.stroke-dasharray]="segment.dash" [attr.stroke-dashoffset]="segment.offset" class="priority-donut-segment" transform="rotate(-90 92 92)" />
+                      }
+                      <text class="priority-donut-total" x="92" y="88" text-anchor="middle">{{ total.toLocaleString() }}</text>
+                      <text class="priority-donut-caption" x="92" y="106" text-anchor="middle">CASES</text>
+                    </svg>
+                    <div class="priority-donut-note"><span>Resolution rate</span><strong>{{ resolutionRate.toFixed(1) }}%</strong><small>{{ resolutionRateCount }} of {{ total }} cases</small></div>
+                  </div>
+                  <div class="priority-legend" role="list">
+                    @for (item of priorityChart; track item.label) {
+                      <div class="priority-legend-row" role="listitem">
+                        <span class="priority-swatch" [style.backgroundColor]="item.color"></span>
+                        <span class="priority-legend-label">{{ item.label }}</span>
+                        <strong>{{ item.value.toLocaleString() }}</strong>
+                        <small>{{ item.percent.toFixed(1) }}%</small>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="priority-summary"><span>Resolution rate</span><strong>{{ resolutionRateCount }} resolved</strong><b>{{ resolutionRate.toFixed(1) }}%</b></div>
+                <section class="print-only chart-report-summary" aria-label="Priority distribution summary">
+                  <h4>Priority analysis</h4><p>{{ priorityPrintSummary }}</p>
+                  <div class="print-detail-grid">
+                    @for (item of priorityChart; track item.label) {
+                      <div><span>{{ item.label }}</span><strong>{{ item.value }} cases</strong><small>{{ item.percent.toFixed(1) }}%</small></div>
+                    }
+                  </div>
+                </section>
+              </article>
+            </div>
+          }
+          <footer class="print-report-footer"><span>CASEPULSE <i></i> SALESFORCE CASE TRACKER</span><span>Confidential  Generated {{ todayLabel }}</span></footer>
+        </section>
+      }
+
+      @if (teamWorkloadView) {
+        <section class="team-workload" aria-label="Team workload dashboard">
+          <div class="team-toolbar">
+            <label><span>TEAM MEMBER</span><select [(ngModel)]="selectedTeamMember" (change)="loadTeamActivities()" aria-label="Select team member">@for (member of teamMembers; track member) { <option [value]="member">{{ member }}</option> }</select></label>
+            <label><span>ACTIVITY DATE</span><input type="date" [(ngModel)]="selectedActivityDate" (change)="loadTeamActivities()" aria-label="Select activity date" /></label>
+            <button type="button" class="icon-button" (click)="loadTeamActivities()" aria-label="Refresh activities" title="Refresh activities"></button>
+          </div>
+          <div class="workload-summary">
+            <article><span>AVAILABLE HOURS</span><strong>{{ activityHoursLabel }}</strong><small>Manually logged active time, excluding breaks</small></article>
+            <article><span>BREAK TIME</span><strong>{{ breakHoursLabel }}</strong><small>Break entries for this date</small></article>
+            <article><span>ACTIVITY ENTRIES</span><strong>{{ teamActivities.length }}</strong><small>{{ formatDate(selectedActivityDate) }}</small></article>
+          </div>
+          <div class="workload-layout">
+            <section class="activity-form-card">
+              <div class="workload-section-heading"><div><h2>Log an activity</h2><p>Enter one time block at a time. Breaks should be logged separately.</p></div></div>
+              <form class="activity-form" (ngSubmit)="saveTeamActivity()">
+                <label><span>ACTIVITY TYPE</span><select name="activityType" [(ngModel)]="activityType" required>@for (type of activityTypes; track type) { <option [value]="type">{{ type }}</option> }</select></label>
+                <label class="activity-details-field"><span>WHAT DID YOU WORK ON?</span><input name="activityDetails" type="text" maxlength="500" [(ngModel)]="activityDetails" placeholder="e.g. Reviewed Batch 2 case requirements" required /></label>
+                <div class="activity-time-fields">
+                  <label><span>FROM</span><input name="startTime" type="time" [(ngModel)]="activityStartTime" required /></label>
+                  <label><span>TO</span><input name="endTime" type="time" [(ngModel)]="activityEndTime" required /></label>
+                </div>
+                <button class="button button-primary" type="submit" [disabled]="activitySaving">{{ activitySaving ? 'Saving...' : 'Save activity' }}</button>
+                <p class="activity-form-hint">Time ranges are for the selected day and cannot overlap another entry.</p>
+              </form>
+            </section>
+            <section class="activity-list-card" aria-label="Activity timeline">
+              <div class="workload-section-heading"><div><h2>{{ selectedTeamMember }}</h2><p>Activity timeline  {{ formatDate(selectedActivityDate) }}</p></div><span class="activity-count">{{ teamActivities.length }} entries</span></div>
+              @if (teamActivities.length) {
+                <div class="activity-timeline">
+                  @for (activity of teamActivities; track activity.ID) {
+                    <article class="activity-entry" [class.break-entry]="activity['Activity Type'] === 'Break'">
+                      <div class="activity-entry-time"><strong>{{ formatActivityTime(activity['Start Time']) }}</strong><span>{{ formatActivityTime(activity['End Time']) }}</span></div>
+                      <span class="activity-marker" aria-hidden="true"></span>
+                      <div class="activity-entry-details"><div><span class="activity-type-badge">{{ activity['Activity Type'] }}</span><strong>{{ formatDuration(activity['Duration Minutes']) }}</strong></div><p>{{ activity.Details }}</p></div>
+                      <button class="activity-delete" type="button" (click)="deleteTeamActivity(activity.ID)" [attr.aria-label]="'Delete ' + activity['Activity Type'] + ' activity'"></button>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="activity-empty"><span aria-hidden="true"></span><strong>No activities logged</strong><p>Start by adding an activity or break for this team member and date.</p></div>
+              }
+            </section>
+          </div>
+        </section>
+      }
+
+      @if (!dashboardView && !teamWorkloadView) {
+      <section class="results-section" [attr.aria-label]="riskSummaryView ? 'Risk summary records' : 'Salesforce case records'">
+        <div class="results-heading"><div class="results-title"><h2>{{ riskSummaryView ? 'Risk items' : 'Cases' }}</h2><span class="result-count">{{ total.toLocaleString() }}</span><span class="results-context">records</span></div><div class="results-tools"><span class="table-updated"><span class="refresh-mark" aria-hidden="true"></span> Synced with database</span><button class="icon-button" type="button" title="Refresh results" aria-label="Refresh results" (click)="loadMetrics()"><span class="refresh-mark" aria-hidden="true"></span></button></div></div>
+        <div class="table-frame">
+          @if (loading) {
+            <div class="table-state"><span class="loader"></span><span>{{ riskSummaryView ? 'Loading risk data...' : 'Loading case data...' }}</span></div>
+          } @else if (rows.length === 0) {
+            <div class="table-state empty-state"><span class="empty-mark" aria-hidden="true"></span><strong>{{ riskSummaryView ? 'No risks to show' : 'No cases to show' }}</strong><span>{{ databaseState === 'disconnected' ? 'Start PostgreSQL and the API, then check your connection settings.' : riskSummaryView ? 'The current data has no items tagged ORCA Scan, Pentest 2026, or ZeroThreat.' : 'Import a DevOps workbook or adjust your filters.' }}</span><button class="text-button" type="button" (click)="chooseFile()">Import a workbook <span aria-hidden="true"></span></button></div>
+          } @else {
+            <div class="table-scroll"><table>
+              <thead><tr>@for (column of columns; track column) { <th scope="col">{{ column === 'Age' || column === 'Resolution' ? column + ' (days)' : column }}</th> }</tr></thead>
+              <tbody>@for (row of rows; track row['ID']) { <tr>
+                @for (column of columns; track column) {
+                  <td [class.title-cell]="column === 'Title'" [class.id-cell]="column === 'ID' || column === 'Salesforce ID'">
+                    @if (column === 'ID' && devOpsWorkItemUrl(row[column]); as workItemUrl) { <a class="record-link devops-id-link" [href]="workItemUrl" target="_blank" rel="noopener noreferrer">{{ row[column] }}</a> }
+                    @else if (column === 'Salesforce ID' && salesforceCaseUrl(row[column]); as caseUrl) { <a class="record-link" [href]="caseUrl" target="_blank" rel="noopener noreferrer">{{ row[column] }}</a> }
+                    @else if (column === 'Assigned To') { {{ displayAssignedTo(row[column]) }} }
+                    @else if (column === 'Tags') { @for (badge of tagBadges(row[column]); track badge.label) { <span class="priority-pill" [style.backgroundColor]="badge.backgroundColor">{{ badge.label }}</span> } }
+                    @else if (column === 'Priority') { <span class="priority-pill" [class]="'priority-pill ' + priorityClass(row[column])">{{ row[column] ?? 'Medium' }}</span> }
+                    @else if (column === 'Age') { <span class="age-badge" [class]="'age-badge ' + ageClass(row[column])">{{ row[column] ?? '-' }}</span> }
+                    @else if (column === 'State' && row[column] !== null) { <span class="state-value"><span class="state-dot" [class.state-closed]="isClosed(row[column])"></span>{{ row[column] }}</span> }
+                    @else if (column === 'Created Date' || column === 'Closed Date') { {{ formatDate(row[column]) }} }
+                    @else if (column === 'Created Time' || column === 'Closed Time') { {{ formatTime(row[column]) }} }
+                    @else { {{ row[column] ?? '-' }} }
+                  </td>
+                }
+              </tr> }</tbody>
+            </table></div>
+          }
+        </div>
+        <div class="table-footer"><span>Showing <strong>{{ rows.length.toLocaleString() }}</strong> of <strong>{{ total.toLocaleString() }}</strong> matching items</span><span class="footer-status"><span></span>PostgreSQL</span></div>
+      </section>
+      }
+      <footer class="page-footer"><span>CASEPULSE <span></span> {{ riskSummaryView ? 'RISK SUMMARY' : 'SALESFORCE CASE TRACKER' }}</span><span>Data stays in your PostgreSQL database</span></footer>
+      }
+    </div>
+  </main>
+</div>
