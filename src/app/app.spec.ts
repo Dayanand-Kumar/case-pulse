@@ -1,8 +1,11 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { AuthService } from './auth/auth.service';
 import { parseCsv } from './csv';
+import { routes } from './app.routes';
 
 describe('parseCsv', () => {
   it('parses quoted values, escaped quotes, and embedded newlines', () => {
@@ -31,9 +34,13 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter(routes)],
     }).compileComponents();
     httpTesting = TestBed.inject(HttpTestingController);
+    TestBed.inject(AuthService).setSession('test-token', {
+      id: 1, username: 'tester', displayName: 'Tester', role: 'admin',
+      permissions: ['cases', 'dashboard', 'risk-summary', 'team-workload', 'categories', 'documentation', 'reports', 'monitoring', 'live-data', 'access-management', 'data-import'],
+    });
   });
 
   afterEach(() => {
@@ -202,6 +209,73 @@ describe('App', () => {
     expect(app.tags).toBe('External');
     expect(app.multiSelect).toBe(false);
     expect(app.rows.map((item) => item.ID)).toEqual([1]);
+  });
+
+  it('toggles Rollout and Non Rollout batch filters with matching counts', () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    httpTesting.expectOne('/api/health').flush({ status: 'ok', database: 'connected' });
+    const row = (id: number, tags: string) => ({
+      'Work Item Type': 'Bug', ID: id, 'Salesforce ID': null, Title: `Case ${id}`, 'Assigned To': 'Owner',
+      State: 'Implementation', Priority: '2 - High', Tags: tags, 'Area Path': 'Core', 'Created Date': '2026-10-07',
+      'Created Time': '11:04:17', Age: 10, Resolution: null, 'Comment Count': null, 'Related Link Count': null,
+      'Closing Comment': null, 'Closed Date': null, 'Closed Time': null,
+    });
+    httpTesting.expectOne('/api/metrics').flush({
+      items: [
+        row(1, 'External;Pilot Case'),
+        row(2, 'External;Batch1'),
+        row(3, 'External;Batch6'),
+        row(4, 'External;Hospitals'),
+        row(5, 'External'),
+        row(6, 'External;Datasync'),
+      ],
+      total: 6,
+    });
+    fixture.detectChanges();
+
+    app.setMultiSelect(true);
+    app.toggleRollout();
+    expect(app.rolloutActive).toBe(true);
+    expect(app.rows.map((item) => item.ID)).toEqual([1, 2, 3, 4]);
+    expect(app.total).toBe(4);
+    fixture.detectChanges();
+    const buttons = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.alternative-filter-card:nth-of-type(3) .alternative-filter-option')).map((button) => button.textContent?.trim());
+    expect(buttons).toEqual(['Pilot', 'Batch1', 'Batch2', 'Batch3', 'Batch4', 'Batch5', 'Hospitals', 'Batch6']);
+
+    app.selectBatchTag('Batch6');
+    expect(app.rows.map((item) => item.ID)).toEqual([3]);
+    app.selectBatchTag('Batch6');
+    expect(app.total).toBe(4);
+
+    app.toggleNonRollout();
+    expect(app.rolloutActive).toBe(false);
+    expect(app.nonRolloutActive).toBe(true);
+    expect(app.rows.map((item) => item.ID)).toEqual([5, 6]);
+    expect(app.total).toBe(2);
+
+    app.toggleNonRollout();
+    expect(app.total).toBe(6);
+
+    app.setMultiSelect(false);
+    app.toggleRollout();
+    expect(app.tags).toBe('External, Rollout');
+    expect(app.total).toBe(4);
+    app.toggleNonRollout();
+    expect(app.tags).toBe('External, Non Rollout');
+    expect(app.total).toBe(2);
+
+    const sourceButtons = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.source-external, .source-internal, .source-po')).map((button) => button.textContent?.trim());
+    expect(sourceButtons).toContain('External');
+    expect(sourceButtons).toContain('Internal');
+
+    app.selectCaseSource('internal');
+    expect(app.caseSource).toBe('internal');
+    app.selectCaseSource('internal');
+    expect(app.caseSource).toBe('all');
+
+    app.selectTag('Datasync');
+    expect(app.rows.map((item) => item.ID)).toEqual([6]);
   });
 
   it('filters cases by the Prescribing and eP2 area paths', () => {

@@ -1,0 +1,38 @@
+<section class="page-heading live-data-heading">
+  <div>
+    <div class="eyebrow"><span class="eyebrow-line"></span>AZURE DEVOPS</div>
+    <h1>Live Data</h1>
+    <p class="page-subtitle">Pull the latest work items from the Practice Management / Core area path.</p>
+  </div>
+  <button class="button button-primary" type="button" (click)="pullLatest()" [disabled]="loading()">
+    <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>{{ loading() ? 'Pulling...' : 'Pull SF data' }}
+  </button>
+</section>
+<section class="live-data-panel" aria-label="Live Azure DevOps data">
+  <div class="live-data-meta">
+    <strong>Central Change Portfolio\Practice Management\Core</strong>
+    <span>{{ rows().length.toLocaleString() }} cases{{ fetchedAt() ? ' · fetched ' + fetchedAt() : '' }}</span>
+  </div>
+  @if (errorMessage()) { <div class="notice" role="alert"><span>{{ errorMessage() }}</span></div> }
+  @if (loading()) {
+    <div class="table-state"><span class="loader"></span><span>Loading live Azure DevOps cases...</span></div>
+  } @else if (!rows().length) {
+    <div class="table-state empty-state">
+      <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+      <strong>No live data loaded</strong><span>Click Pull SF data to query Azure DevOps.</span>
+    </div>
+  } @else {
+    <div class="table-frame"><div class="table-scroll"><table>
+      <thead><tr><th>ID</th><th>Title</th><th>Assigned To</th><th>State</th><th>Priority</th><th>Tags</th><th>Created Date</th></tr></thead>
+      <tbody>
+        @for (row of rows(); track row.ID) {
+          <tr>
+            <td class="id-cell">{{ row.ID }}</td><td class="title-cell">{{ row['Title'] }}</td>
+            <td>{{ row['Assigned To'] || 'Unassigned' }}</td><td>{{ row['State'] }}</td>
+            <td>{{ row['Priority'] || '—' }}</td><td>{{ row['Tags'] || '—' }}</td><td>{{ row['Created Date'] || '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table></div></div>
+  }
+</section>

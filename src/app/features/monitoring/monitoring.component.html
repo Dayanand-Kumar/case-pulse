@@ -1,0 +1,41 @@
+<section class="page-heading monitoring-heading">
+  <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONS</div><h1>Monitoring</h1><p class="page-subtitle">Errors captured by the team per module: what occurred on a day, and how often.</p></div>
+  <div class="heading-actions monitoring-actions">
+    <button class="button button-secondary" type="button" (click)="vm.downloadMonitoringTemplate()"><i class="fa-solid fa-file-excel" aria-hidden="true"></i>Export template</button>
+    <label class="button button-secondary monitoring-import"><i class="fa-solid fa-upload" aria-hidden="true"></i>Import<input type="file" accept=".xlsx,.csv" hidden (change)="vm.importMonitoring($event)" /></label>
+    <button class="button button-secondary" type="button" (click)="vm.loadMonitoringSampleData()" [disabled]="vm.monitoringLoading"><i class="fa-solid fa-database" aria-hidden="true"></i>Load sample data</button>
+    <button class="button button-secondary" type="button" (click)="vm.exportMonitoringExcel()" [disabled]="!vm.monitoringRows.length"><i class="fa-solid fa-file-export" aria-hidden="true"></i>Export Excel</button>
+    <button class="button button-primary" type="button" (click)="vm.exportMonitoringPdf()" [disabled]="!vm.monitoringRows.length"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i>Export PDF</button>
+  </div>
+</section>
+@if (vm.monitoringMessage) { <div class="notice" [class.notice-success]="vm.monitoringMessageKind === 'success'" role="alert"><span>{{ vm.monitoringMessage }}</span><button type="button" class="notice-close" aria-label="Dismiss" (click)="vm.monitoringMessage = ''">×</button></div> }
+<section class="filter-panel monitoring-filters" aria-label="Monitoring filters">
+  <div class="quick-filter-group" role="group" aria-label="Filter by module">
+    <span class="quick-filter-label">MODULE</span>
+    @for (module of vm.monitoringModules; track module) { <button type="button" class="quick-filter-button" [class.selected]="vm.monitoringModule === module" [attr.aria-pressed]="vm.monitoringModule === module" (click)="vm.selectMonitoringModule(module)">{{ module }}</button> }
+  </div>
+  <div class="filter-fields">
+    <label class="filter-control"><span>FROM DATE</span><input type="date" [(ngModel)]="vm.monitoringDateFrom" [max]="vm.monitoringDateTo || null" aria-label="From date" /></label>
+    <label class="filter-control"><span>TO DATE</span><input type="date" [(ngModel)]="vm.monitoringDateTo" [min]="vm.monitoringDateFrom || null" aria-label="To date" /></label>
+    <label class="filter-control"><span>ALARM CONFIGURED</span><select [(ngModel)]="vm.monitoringAlarm" aria-label="Alarm configured"><option value="">All</option><option value="Yes">Yes</option><option value="No">No</option></select></label>
+    <label class="filter-control search-id-control"><span>SEARCH</span><input type="search" [(ngModel)]="vm.monitoringSearch" placeholder="Error, remarks, or ticket" (keydown.enter)="vm.loadMonitoring()" /></label>
+    <button type="button" class="apply-button" (click)="vm.loadMonitoring()" [disabled]="vm.monitoringLoading"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>Apply</button>
+    <button type="button" class="text-button" (click)="vm.clearMonitoringFilters()">Clear all</button>
+  </div>
+</section>
+<section class="monitoring-summary" aria-label="Summary"><span><strong>{{ vm.monitoringRows.length.toLocaleString() }}</strong> error entries</span><span><strong>{{ vm.monitoringOccurrencesTotal.toLocaleString() }}</strong> total occurrences</span><span class="monitoring-hint">Click an error to see how many times it occurred per day.</span></section>
+@if (vm.selectedMonitoringError; as selected) {
+  <section class="monitoring-detail" aria-label="Error occurrences by day">
+    <div class="monitoring-detail-head"><div><strong>{{ selected.module }}</strong> <span>· Actual error</span></div><div class="monitoring-detail-total"><strong>{{ vm.monitoringOccurrenceTotal.toLocaleString() }}</strong><span>occurrences{{ vm.monitoringDateFrom || vm.monitoringDateTo ? ' in selected dates' : '' }}</span></div><button type="button" class="notice-close" aria-label="Close" (click)="vm.selectedMonitoringError = null">×</button></div>
+    <div class="monitoring-error-box"><textarea class="monitoring-error-text" rows="8" disabled aria-label="Actual error" [value]="selected.error_details"></textarea><button type="button" class="button button-secondary monitoring-copy" (click)="vm.copyMonitoringError()"><i class="fa-regular fa-copy" aria-hidden="true"></i>Copy</button></div>
+  </section>
+  <section class="monitoring-detail monitoring-analytics" aria-label="Error analytics">
+    <div class="monitoring-detail-head"><div><strong>Analytics</strong> <span>· occurrences per day</span></div><button type="button" class="button button-secondary monitoring-copy" (click)="vm.copyMonitoringAnalytics()" [disabled]="!vm.monitoringOccurrences.length"><i class="fa-regular fa-copy" aria-hidden="true"></i>Copy table</button></div>
+    <table><thead><tr><th>Module</th><th>Date</th><th>Occurrences</th><th>Entries</th><th>First Occurance</th><th>Last Occurance</th></tr></thead><tbody>@for (day of vm.monitoringOccurrences; track day.error_date) { <tr><td>{{ selected.module }}</td><td>{{ day.error_date }}</td><td><strong>{{ day.occurrences }}</strong></td><td>{{ day.entries }}</td><td>{{ day.first_seen || '—' }}</td><td>{{ day.last_seen || '—' }}</td></tr> }</tbody><tfoot><tr><td colspan="2"><strong>Total</strong></td><td><strong>{{ vm.monitoringOccurrenceTotal }}</strong></td><td colspan="3"></td></tr></tfoot></table>
+  </section>
+}
+<section class="table-frame monitoring-grid" aria-label="Error details">
+  @if (vm.monitoringLoading) { <div class="table-state"><span class="loader"></span><span>Loading error details...</span></div> }
+  @else if (!vm.monitoringRows.length) { <div class="table-state empty-state"><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i><strong>No error details found</strong><span>Export the template, fill it in, and import it, or adjust the filters.</span></div> }
+  @else { <div class="table-scroll"><table><thead><tr>@for (column of vm.monitoringColumns; track column.key) { <th>{{ column.header }}</th> }</tr></thead><tbody>@for (row of vm.monitoringRows; track row.id) { <tr class="monitoring-row" [class.selected]="vm.selectedMonitoringError?.id === row.id" tabindex="0" (click)="vm.selectMonitoringError(row)" (keydown.enter)="vm.selectMonitoringError(row)"><td>{{ row.module }}</td><td>{{ row.error_date }}</td><td>{{ row.exact_timestamp?.replace('T', ' ') || '—' }}</td><td class="title-cell">{{ row.error_details }}</td><td>{{ vm.errorOccurrenceTotal(row) }}</td><td>{{ row.alarm_configured }}</td><td>{{ row.remarks || '—' }}</td><td>{{ row.severity || '—' }}</td><td>{{ row.environment || '—' }}</td><td>{{ row.status || '—' }}</td><td>{{ row.owner || '—' }}</td><td>{{ row.ticket_id || '—' }}</td></tr> }</tbody></table></div> }
+</section>

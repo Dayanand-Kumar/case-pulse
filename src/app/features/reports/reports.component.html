@@ -1,0 +1,53 @@
+<section class="page-heading reports-page-heading">
+  <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONAL REPORTING</div><h1>Reports</h1><p class="page-subtitle">Invoice delivery and patient activity, organized for a clear period-by-period review.</p></div>
+  <div class="heading-actions report-actions">
+    <button class="button button-secondary" type="button" disabled title="Import will be enabled after the report workbook columns are mapped"><i class="fa-solid fa-upload" aria-hidden="true"></i>Import CSV / Excel</button>
+    <button class="button button-primary" type="button" disabled title="Export will be enabled after the report workbook columns are mapped"><i class="fa-solid fa-download" aria-hidden="true"></i>{{ vm.selectedReportTab === 'patients' ? 'Export all patient details' : 'Export report' }}</button>
+  </div>
+</section>
+<section class="report-period-panel" aria-label="Required report date range">
+  <div class="report-period-copy"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><div><strong>Choose a reporting period</strong><span>Both dates are required before report data can be viewed.</span></div></div>
+  <div class="report-period-controls">
+    <label><span>FROM DATE</span><input type="date" required aria-label="Report start date" [(ngModel)]="vm.reportDateFrom" (ngModelChange)="vm.reportRangeApplied = false; vm.reportRangeError = ''" [max]="vm.reportDateTo || null" /></label>
+    <span class="report-date-separator" aria-hidden="true">to</span>
+    <label><span>TO DATE</span><input type="date" required aria-label="Report end date" [(ngModel)]="vm.reportDateTo" (ngModelChange)="vm.reportRangeApplied = false; vm.reportRangeError = ''" [min]="vm.reportDateFrom || null" /></label>
+    <button class="button button-primary report-apply-button" type="button" (click)="vm.applyReportDateRange()">Apply dates</button>
+    <button class="text-button report-clear-button" type="button" (click)="vm.clearReportDateRange()">Clear</button>
+  </div>
+  @if (vm.reportRangeError) { <p class="report-range-error" role="alert">{{ vm.reportRangeError }}</p> }
+</section>
+<section class="reports-workspace" aria-label="Reports">
+  <div class="report-tabs" role="tablist" aria-label="Report type">
+    @for (tab of vm.reportTabs; track tab.id) {
+      <button class="report-tab" [class.active]="vm.selectedReportTab === tab.id" type="button" role="tab" [attr.aria-selected]="vm.selectedReportTab === tab.id" [attr.aria-controls]="'report-panel-' + tab.id" (click)="vm.selectReportTab(tab.id)">
+        <span>{{ tab.label }}</span><span class="report-tab-count">{{ vm.reportRangeApplied ? tab.count.toLocaleString() : '' }}</span>
+      </button>
+    }
+  </div>
+  <div class="report-panel" [id]="'report-panel-' + vm.selectedReportTab" role="tabpanel">
+    @if (!vm.reportRangeApplied) {
+      <div class="report-empty-state"><i class="fa-solid fa-inbox" aria-hidden="true"></i><strong>Select both a start date and an end date</strong><p>Choose both a start date and an end date, then apply them to view the report.</p></div>
+    } @else {
+      <div class="report-preview-banner"><i class="fa-solid fa-circle" aria-hidden="true"></i><span><strong>Reference preview</strong> Illustrative figures supplied for layout review; live report data will replace these after workbook mapping.</span><span class="report-preview-period">{{ vm.formatDate(vm.reportDateFrom) }} {{ vm.formatDate(vm.reportDateTo) }}</span></div>
+      @if (vm.selectedReportTab === 'invoices') {
+        <div class="report-summary-heading"><div><span class="report-kicker">INVOICE DELIVERY OVERVIEW</span><h2>Total invoices</h2><p>Volume by batch and invoice delivery type</p></div><div class="report-total-value">{{ vm.reportTotalInvoices.toLocaleString() }}<span>invoices</span></div></div>
+        <div class="report-table-scroll">
+          <table class="report-table">
+            <thead><tr><th scope="col">Batch no. / type of invoices</th><th scope="col">Online PZ(O)</th><th scope="col">Electronic E</th><th scope="col">Paper P</th><th scope="col">Generated / released sites</th></tr></thead>
+            <tbody>
+              @for (row of vm.invoiceReportRows; track row.batch) {
+                <tr><th scope="row"><i class="fa-solid fa-square" aria-hidden="true"></i>{{ row.batch }}</th><td>{{ row.online.toLocaleString() }}</td><td>{{ row.electronic.toLocaleString() }}</td><td>{{ row.paper.toLocaleString() }}</td><td><strong>{{ row.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr>
+              }
+            </tbody>
+            <tfoot><tr><th scope="row">Total invoices</th><td>{{ vm.invoiceReportTotal.online.toLocaleString() }}</td><td>{{ vm.invoiceReportTotal.electronic.toLocaleString() }}</td><td>{{ vm.invoiceReportTotal.paper.toLocaleString() }}</td><td><strong>{{ vm.invoiceReportTotal.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr></tfoot>
+          </table>
+        </div>
+        <div class="report-table-foot"><span>Invoices across all batches</span><strong>{{ vm.reportTotalInvoices.toLocaleString() }} total</strong></div>
+      } @else if (vm.selectedReportMetric; as metric) {
+        <div class="report-summary-heading metric-report-heading"><div><span class="report-kicker">PATIENT ACTIVITY OVERVIEW</span><h2>{{ metric.label }}</h2><p>{{ vm.selectedReportTab === 'patients' ? 'Unique patient records in the selected period' : vm.selectedReportTab === 'appointments' ? 'Appointments recorded in the selected period' : 'Clinic notes recorded in the selected period' }}</p></div><div class="report-total-value">{{ metric.count.toLocaleString() }}<span>{{ vm.selectedReportTab === 'patients' ? 'patients' : vm.selectedReportTab === 'appointments' ? 'appointments' : 'clinic notes' }}</span></div></div>
+        <div class="report-detail-prompt"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><div><strong>{{ vm.selectedReportTab === 'patients' ? 'Patient detail export' : 'Record-level detail' }}</strong><p>{{ vm.selectedReportTab === 'patients' ? 'Export will include every patient detail row for the selected date range.' : 'Record-level rows will be available in the selected report export.' }} Workbook column mapping is required to load source records.</p></div></div>
+      }
+    }
+  </div>
+</section>
+<footer class="page-footer"><span>CASEPULSE <span></span> REPORTS</span><span>Choose a date range to view report data</span></footer>

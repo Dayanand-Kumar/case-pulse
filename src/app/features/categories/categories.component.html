@@ -1,0 +1,92 @@
+<section class="page-heading categories-heading">
+  <div><div class="eyebrow"><span class="eyebrow-line"></span>CASE CLASSIFICATION</div><h1>Categories</h1><p class="page-subtitle">Browse DevOps cases by category, area path, and created date.</p></div>
+</section>
+<section class="alternative-filter-panel categories-filter-panel" aria-label="Category case filters">
+  <div class="alternative-filter-heading">
+    <div><span class="alternative-filter-kicker">FILTER WORKSPACE</span><h2>Case filters</h2><p>Same filters as the case tracker.</p></div>
+    <div class="alternative-filter-heading-right"><div class="alternative-filter-actions"><label class="multi-select-toggle"><input type="checkbox" role="switch" [ngModel]="vm.multiSelect" (ngModelChange)="vm.setMultiSelect($event)" aria-label="Enable multi-select for category filters" />Multi-select</label><button type="button" class="text-button" (click)="vm.clearFilters()">Reset filters <span aria-hidden="true"></span></button></div></div>
+  </div>
+  <div class="alternative-filter-grid">
+    <fieldset class="alternative-filter-card"><legend>AREA PATH</legend><div class="alternative-filter-options">
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isAreaSelected('Accounting')" [attr.aria-pressed]="vm.isAreaSelected('Accounting')" (click)="vm.selectArea('Accounting')">Accounting</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isAreaSelected('Core')" [attr.aria-pressed]="vm.isAreaSelected('Core')" (click)="vm.selectArea('Core')">Core</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isAreaSelected(vm.prescribingAreaPath)" [attr.aria-pressed]="vm.isAreaSelected(vm.prescribingAreaPath)" (click)="vm.selectArea(vm.prescribingAreaPath)">Prescribing</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isAreaSelected(vm.ep2AreaPath)" [attr.aria-pressed]="vm.isAreaSelected(vm.ep2AreaPath)" (click)="vm.selectArea(vm.ep2AreaPath)">eP2 (Team 4)</button>
+    </div></fieldset>
+    <fieldset class="alternative-filter-card case-type-card"><legend>CASE TYPE &amp; CATEGORY</legend>
+      <div class="source-toggle" role="group" aria-label="Case source filter">
+        @for (source of vm.caseSources; track source.value) { <button type="button" [ngClass]="'source-' + source.value" [class.on]="vm.caseSource === source.value" [attr.aria-pressed]="vm.caseSource === source.value" (click)="vm.selectCaseSource(source.value)">{{ source.label }}</button> }
+      </div>
+      <div class="alternative-filter-options">
+        <button type="button" class="alternative-filter-option" [class.selected]="vm.isWorkspaceCategorySelected('Datasync')" [attr.aria-pressed]="vm.isWorkspaceCategorySelected('Datasync')" (click)="vm.selectWorkspaceCategory('Datasync')">Datasync</button>
+        <button type="button" class="alternative-filter-option" [class.selected]="vm.isWorkspaceCategorySelected('DevFixRequired')" [attr.aria-pressed]="vm.isWorkspaceCategorySelected('DevFixRequired')" (click)="vm.selectWorkspaceCategory('DevFixRequired')">Code Fix</button>
+        <button type="button" class="alternative-filter-option" [class.selected]="vm.isWorkspaceCategorySelected('Feature')" [attr.aria-pressed]="vm.isWorkspaceCategorySelected('Feature')" (click)="vm.selectWorkspaceCategory('Feature')">Feature</button>
+        <button type="button" class="alternative-filter-option" [class.selected]="vm.isTagSelected('Validation')" [attr.aria-pressed]="vm.isTagSelected('Validation')" (click)="vm.selectTag('Validation')">No Fix</button>
+        <button type="button" class="alternative-filter-option" [class.selected]="vm.isTagSelected('Others')" [attr.aria-pressed]="vm.isTagSelected('Others')" (click)="vm.selectTag('Others')">Others</button>
+      </div></fieldset>
+    <fieldset class="alternative-filter-card batches-card"><legend>BATCHES</legend>
+      @if (!vm.isTeam4Selected) {
+      <div class="rollout-toggle" role="group" aria-label="Rollout or non rollout">
+        <button type="button" [class.on]="vm.rolloutActive" [attr.aria-pressed]="vm.rolloutActive" (click)="vm.toggleRollout()">Rollout</button>
+        <button type="button" [class.on]="vm.nonRolloutActive" [attr.aria-pressed]="vm.nonRolloutActive" (click)="vm.toggleNonRollout()">Non Rollout</button>
+      </div>
+      }
+      <div class="alternative-filter-options">
+      @if (vm.isTeam4Selected) { @for (tag of vm.team4Tags; track tag) { <button type="button" class="alternative-filter-option" [class.selected]="vm.isTagSelected(tag)" [attr.aria-pressed]="vm.isTagSelected(tag)" (click)="vm.selectTag(tag)">{{ tag }}</button> } } @else {
+      @if (vm.rolloutActive) {
+      @for (item of vm.rolloutBatchTags; track item.tag) { <button type="button" class="alternative-filter-option" [class.selected]="vm.isTagSelected(item.tag)" [attr.aria-pressed]="vm.isTagSelected(item.tag)" (click)="vm.selectBatchTag(item.tag)">{{ item.label }}</button> }
+      } @else if (!vm.nonRolloutActive) {
+      <span class="batches-hint">Choose Rollout to filter by batch</span>
+      }
+      }
+      </div></fieldset>
+    <fieldset class="alternative-filter-card"><legend>STATE</legend><div class="alternative-filter-options">
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isStateSelected('resolved')" [attr.aria-pressed]="vm.isStateSelected('resolved')" (click)="vm.selectState('resolved')">Resolved / Closed</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isStateSelected('opened')" [attr.aria-pressed]="vm.isStateSelected('opened')" (click)="vm.selectState('opened')">Opened</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isStateSelected('reopened')" [attr.aria-pressed]="vm.isStateSelected('reopened')" (click)="vm.selectState('reopened')">Reopened</button>
+      <button type="button" class="alternative-filter-option" [class.selected]="vm.isStateSelected('awaitingImplementation')" [attr.aria-pressed]="vm.isStateSelected('awaitingImplementation')" [disabled]="!vm.isTeam4Selected" (click)="vm.selectState('awaitingImplementation')">Awaiting Implementation</button>
+    </div></fieldset>
+    <fieldset class="alternative-filter-card alternative-date-card"><legend>CREATED DATE RANGE</legend><div class="alternative-date-fields"><label><span>FROM</span><input type="date" [(ngModel)]="vm.dateFrom" (change)="vm.applyFilters()" aria-label="Created date from" /></label><label><span>TO</span><input type="date" [(ngModel)]="vm.dateTo" (change)="vm.applyFilters()" aria-label="Created date to" /></label></div><button class="date-reset-icon" type="button" (click)="vm.clearDateRange()" aria-label="Clear date filters" title="Clear date filters"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></fieldset>
+  </div>
+</section>
+<section class="categories-results" aria-label="Case categories">
+  @if (!vm.categoryGroups.length) {
+    <div class="categories-empty"><i class="fa-solid fa-box-open" aria-hidden="true"></i><strong>No categories found</strong><span>Adjust the case filters.</span></div>
+  } @else {
+    @let selected = vm.selectedCategoryGroup;
+    <div class="category-split">
+      @if (selected) {
+        <article class="category-detail">
+          <header class="category-detail-header">
+            <div><span class="category-detail-kicker">CATEGORY</span><h2>{{ selected.name }}</h2></div><span class="category-detail-count"><strong>{{ selected.cases.length }}</strong>{{ selected.cases.length === 1 ? ' case' : ' cases' }} &middot; {{ vm.categoryShare(selected) }}% of all</span>
+            <button type="button" class="category-copy-button" [class.copied]="vm.copiedCategory === selected.name" (click)="vm.copyCategoryCases(selected)" [attr.aria-label]="'Copy ' + selected.name + ' cases to clipboard'" title="Copy to clipboard"><i class="fa-solid" [class.fa-clipboard]="vm.copiedCategory !== selected.name" [class.fa-check]="vm.copiedCategory === selected.name" aria-hidden="true"></i>{{ vm.copiedCategory === selected.name ? 'Copied' : 'Copy' }}</button>
+          </header>
+          <div class="category-grid-scroll">
+            <table class="category-grid">
+              <thead><tr><th>Case</th><th>Title</th></tr></thead>
+              <tbody>
+                @for (caseItem of selected.cases; track caseItem.ID) {
+                  <tr><td><a [href]="vm.devOpsWorkItemUrl(caseItem['ID'])" target="_blank" rel="noopener noreferrer">{{ vm.categoryCaseReference(caseItem) }}</a></td><td>{{ caseItem['Title'] }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </article>
+      }
+      <nav class="category-list" aria-label="Categories">
+        <div class="category-list-heading"><strong>Categories</strong><span class="category-total">{{ vm.categoryGroups.length }}</span></div>
+        <label class="category-search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" [(ngModel)]="vm.categorySearch" placeholder="Find a category" aria-label="Find a category" /></label>
+        <div class="category-list-items">
+          @for (group of vm.visibleCategoryGroups; track group.name) {
+            <button type="button" class="category-list-item" [class.active]="selected?.name === group.name" [attr.aria-current]="selected?.name === group.name" (click)="vm.toggleCategory(group.name)">
+              <span class="category-name">{{ group.name }}</span>
+              <span class="category-count">{{ group.cases.length }}</span>
+            </button>
+          } @empty {
+            <span class="category-list-empty">No matching category</span>
+          }
+        </div>
+      </nav>
+    </div>
+  }
+</section>

@@ -1,4 +1,7 @@
+<!--Addyzoe@135791-->
+@if (auth.isLoggedIn()) {
 <div class="workspace">
+
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="CasePulse home">
       <span class="brand-mark"><span></span><span></span><span></span></span>
@@ -6,26 +9,59 @@
     </a>
     <div class="workspace-label">ePx</div>
     <nav aria-label="Main navigation">
-      <a class="nav-item" [class.active]="!dashboardView && !teamWorkloadView && !documentationView && !reportsView" href="/" (click)="$event.preventDefault(); showCases()" [attr.aria-current]="!dashboardView && !teamWorkloadView && !documentationView && !reportsView ? 'page' : null">
-        <svg class="nav-icon cases-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><rect x="4" y="2.5" width="12" height="15" rx="2"></rect><path d="M7 7h6M7 10h6M7 13h4"></path></svg>
+      @if (auth.can('cases')) {
+      <a class="nav-item" [class.active]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView && !accessView" routerLink="/" [attr.aria-current]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView && !accessView ? 'page' : null">
+        <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
         <span>Salesforce Case Tracker</span>
       </a>
-      <a class="nav-item" [class.active]="dashboardView" href="/dashboard" (click)="$event.preventDefault(); showDashboard()" [attr.aria-current]="dashboardView ? 'page' : null">
-        <svg class="nav-icon dashboard-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 16.5h14M4.5 14V9.5h3V14M9 14V4.5h3V14M13.5 14V7h3v7"></path></svg>
+      }
+      @if (auth.can('live-data')) {
+      <a class="nav-item" [class.active]="liveDataView" routerLink="/live-data" [attr.aria-current]="liveDataView ? 'page' : null">
+        <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i><span>Live Data</span>
+      </a>
+      }
+      @if (auth.can('dashboard')) {
+      <a class="nav-item" [class.active]="dashboardView" routerLink="/dashboard" [attr.aria-current]="dashboardView ? 'page' : null">
+        <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
         <span>Dashboard</span>
       </a>
-      <a class="nav-item" [class.active]="teamWorkloadView" href="/team-workload" (click)="$event.preventDefault(); showTeamWorkload()" [attr.aria-current]="teamWorkloadView ? 'page' : null">
-        <svg class="nav-icon people-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="2.5"></circle><circle cx="14" cy="7" r="2"></circle><path d="M2.5 16v-1.5A4.5 4.5 0 0 1 7 10a4.5 4.5 0 0 1 4.5 4.5V16M12 11a3.5 3.5 0 0 1 5.5 2.9V16"></path></svg>
-        <span>Team workload</span>
+      }
+      @if (auth.can('team-workload')) {
+      <a class="nav-item" [class.active]="teamWorkloadView" routerLink="/team-workload" [attr.aria-current]="teamWorkloadView ? 'page' : null">
+        <i class="fa-solid fa-users" aria-hidden="true"></i>
+        <span>Capacity</span>
       </a>
-      <a class="nav-item" [class.active]="documentationView" href="/documentation" (click)="$event.preventDefault(); showDocumentation()" [attr.aria-current]="documentationView ? 'page' : null">
-        <svg class="nav-icon documentation-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M5 2.5h7l3 3V17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1Z"></path><path d="M12 2.5V6h3M7 9h6M7 12h6M7 15h4"></path></svg>
+      }
+      @if (auth.can('categories')) {
+      <a class="nav-item" [class.active]="categoriesView" routerLink="/categories" [attr.aria-current]="categoriesView ? 'page' : null">
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+        <span>Categories</span>
+      </a>
+      }
+      @if (auth.can('documentation')) {
+      <a class="nav-item" [class.active]="documentationView" routerLink="/documentation" [attr.aria-current]="documentationView ? 'page' : null">
+        <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
         <span>Documentation</span>
       </a>
-      <a class="nav-item" [class.active]="reportsView" href="/reports" (click)="$event.preventDefault(); showReports()" [attr.aria-current]="reportsView ? 'page' : null">
-        <svg class="nav-icon reports-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 16.5h14M4.5 14V9.5h3V14M9 14V5h3v9M13.5 14V7h3v7"></path></svg>
+      }
+      @if (auth.can('monitoring')) {
+      <a class="nav-item" [class.active]="monitoringView" routerLink="/monitoring" [attr.aria-current]="monitoringView ? 'page' : null">
+        <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
+        <span>Monitoring</span>
+      </a>
+      }
+      @if (auth.can('reports')) {
+      <a class="nav-item" [class.active]="reportsView" routerLink="/reports" [attr.aria-current]="reportsView ? 'page' : null">
+        <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
         <span>Reports</span>
       </a>
+      }
+      @if (auth.can('access-management')) {
+      <a class="nav-item" [class.active]="accessView" routerLink="/access" [attr.aria-current]="accessView ? 'page' : null">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+        <span>Access Management</span>
+      </a>
+      }
     </nav>
     <div class="sidebar-bottom">
       <div class="database-card">
@@ -33,16 +69,18 @@
         <strong>{{ databaseState === 'connected' ? 'Connected' : databaseState === 'checking' ? 'Checking connection' : 'Not connected' }}</strong>
         <span class="database-caption">{{ databaseState === 'connected' ? 'case_insights' : 'Configure your local database' }}</span>
       </div>
-      <div class="sidebar-foot"><span class="avatar">DM</span><span><strong>DevOps Metrics</strong><small>Local workspace</small></span><span class="more"></span></div>
+      <div class="sidebar-foot"><span class="avatar">{{ auth.user()?.displayName?.slice(0, 2)?.toUpperCase() }}</span><span><strong>{{ auth.user()?.displayName }}</strong><small>{{ auth.user()?.role }}</small></span><button type="button" class="more" aria-label="Sign out" title="Sign out" (click)="auth.logout()"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></button></div>
     </div>
   </aside>
 
   <main class="main-area">
     <header class="topbar">
-      <div class="breadcrumb"><span>ePx</span><span class="crumb-divider">/</span><strong>{{ documentationView ? 'Documentation' : reportsView ? 'Reports' : teamWorkloadView ? 'Team workload' : dashboardView ? 'Dashboard' : riskSummaryView ? 'Risk Summary' : 'Salesforce Case Tracker' }}</strong></div>
+      <div class="breadcrumb"><span>ePx</span><span class="crumb-divider">/</span><strong>{{ monitoringView ? 'Monitoring' : liveDataView ? 'Live Data' : documentationView ? 'Documentation' : categoriesView ? 'Categories' : reportsView ? 'Reports' : teamWorkloadView ? 'Capacity' : dashboardView ? 'Dashboard' : riskSummaryView ? 'Risk Summary' : 'Salesforce Case Tracker' }}</strong></div>
       <div class="topbar-right"><span class="live-label"><span class="live-dot"></span>LIVE DATA</span><span class="topbar-divider"></span><span class="today-label">{{ todayLabel }}</span></div>
     </header>
     <div class="page-content">
+      @if (liveDataView) { <app-live-data /> }
+      @if (accessView) { <app-access /> }
       @if (documentationView) {
       <section class="page-heading documentation-heading">
         <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONS GUIDE</div><h1>Deployment documentation</h1><p class="page-subtitle">A step-by-step guide to prepare an Amazon EC2 server, configure PostgreSQL, publish the CasePulse frontend, and keep the API running.</p></div>
@@ -263,93 +301,45 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
         </article>
       </div>
       <footer class="page-footer"><span>CASEPULSE <span></span> DEPLOYMENT DOCUMENTATION</span><span>Review security and backup requirements before production use</span></footer>
+      } @else if (categoriesView) {
+      <app-categories [vm]="this" />
+      } @else if (monitoringView) {
+      <app-monitoring [vm]="this" />
       } @else if (reportsView) {
-      <section class="page-heading reports-page-heading">
-        <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONAL REPORTING</div><h1>Reports</h1><p class="page-subtitle">Invoice delivery and patient activity, organized for a clear period-by-period review.</p></div>
-        <div class="heading-actions report-actions">
-          <button class="button button-secondary" type="button" disabled title="Import will be enabled after the report workbook columns are mapped"><span class="button-icon upload-icon" aria-hidden="true"></span>Import CSV / Excel</button>
-          <button class="button button-primary" type="button" disabled title="Export will be enabled after the report workbook columns are mapped"><span class="button-icon download-icon" aria-hidden="true"></span>{{ selectedReportTab === 'patients' ? 'Export all patient details' : 'Export report' }}</button>
-        </div>
-      </section>
-
-      <section class="report-period-panel" aria-label="Required report date range">
-        <div class="report-period-copy"><span class="report-period-icon" aria-hidden="true"></span><div><strong>Choose a reporting period</strong><span>Both dates are required before report data can be viewed.</span></div></div>
-        <div class="report-period-controls">
-          <label><span>FROM DATE</span><input type="date" required aria-label="Report start date" [(ngModel)]="reportDateFrom" (ngModelChange)="reportRangeApplied = false; reportRangeError = ''" [max]="reportDateTo || null" /></label>
-          <span class="report-date-separator" aria-hidden="true">to</span>
-          <label><span>TO DATE</span><input type="date" required aria-label="Report end date" [(ngModel)]="reportDateTo" (ngModelChange)="reportRangeApplied = false; reportRangeError = ''" [min]="reportDateFrom || null" /></label>
-          <button class="button button-primary report-apply-button" type="button" (click)="applyReportDateRange()">Apply dates</button>
-          <button class="text-button report-clear-button" type="button" (click)="clearReportDateRange()">Clear</button>
-        </div>
-        @if (reportRangeError) { <p class="report-range-error" role="alert">{{ reportRangeError }}</p> }
-      </section>
-
-      <section class="reports-workspace" aria-label="Reports">
-        <div class="report-tabs" role="tablist" aria-label="Report type">
-          @for (tab of reportTabs; track tab.id) {
-            <button class="report-tab" [class.active]="selectedReportTab === tab.id" type="button" role="tab" [attr.aria-selected]="selectedReportTab === tab.id" [attr.aria-controls]="'report-panel-' + tab.id" (click)="selectReportTab(tab.id)">
-              <span>{{ tab.label }}</span><span class="report-tab-count">{{ reportRangeApplied ? tab.count.toLocaleString() : '' }}</span>
-            </button>
-          }
-        </div>
-
-        <div class="report-panel" [id]="'report-panel-' + selectedReportTab" role="tabpanel">
-          @if (!reportRangeApplied) {
-            <div class="report-empty-state"><span class="report-empty-icon" aria-hidden="true"></span><strong>Select both a start date and an end date</strong><p>Choose both a start date and an end date, then apply them to view the report.</p></div>
-          } @else {
-            <div class="report-preview-banner"><span class="report-preview-dot" aria-hidden="true"></span><span><strong>Reference preview</strong>  Illustrative figures supplied for layout review; live report data will replace these after workbook mapping.</span><span class="report-preview-period">{{ formatDate(reportDateFrom) }}  {{ formatDate(reportDateTo) }}</span></div>
-            @if (selectedReportTab === 'invoices') {
-              <div class="report-summary-heading"><div><span class="report-kicker">INVOICE DELIVERY OVERVIEW</span><h2>Total invoices</h2><p>Volume by batch and invoice delivery type</p></div><div class="report-total-value">{{ reportTotalInvoices.toLocaleString() }}<span>invoices</span></div></div>
-              <div class="report-table-scroll">
-                <table class="report-table">
-                  <thead><tr><th scope="col">Batch no. / type of invoices</th><th scope="col">Online  PZ(O)</th><th scope="col">Electronic  E</th><th scope="col">Paper  P</th><th scope="col">Generated / released sites</th></tr></thead>
-                  <tbody>
-                    @for (row of invoiceReportRows; track row.batch) {
-                      <tr><th scope="row"><span class="report-batch-mark"></span>{{ row.batch }}</th><td>{{ row.online.toLocaleString() }}</td><td>{{ row.electronic.toLocaleString() }}</td><td>{{ row.paper.toLocaleString() }}</td><td><strong>{{ row.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr>
-                    }
-                  </tbody>
-                  <tfoot><tr><th scope="row">Total invoices</th><td>{{ invoiceReportTotal.online.toLocaleString() }}</td><td>{{ invoiceReportTotal.electronic.toLocaleString() }}</td><td>{{ invoiceReportTotal.paper.toLocaleString() }}</td><td><strong>{{ invoiceReportTotal.generatedSites }}</strong><span class="report-site-suffix"> sites</span></td></tr></tfoot>
-                </table>
-              </div>
-              <div class="report-table-foot"><span>Invoices across all batches</span><strong>{{ reportTotalInvoices.toLocaleString() }} total</strong></div>
-            } @else if (selectedReportMetric; as metric) {
-              <div class="report-summary-heading metric-report-heading"><div><span class="report-kicker">PATIENT ACTIVITY OVERVIEW</span><h2>{{ metric.label }}</h2><p>{{ selectedReportTab === 'patients' ? 'Unique patient records in the selected period' : selectedReportTab === 'appointments' ? 'Appointments recorded in the selected period' : 'Clinic notes recorded in the selected period' }}</p></div><div class="report-total-value">{{ metric.count.toLocaleString() }}<span>{{ selectedReportTab === 'patients' ? 'patients' : selectedReportTab === 'appointments' ? 'appointments' : 'clinic notes' }}</span></div></div>
-              <div class="report-detail-prompt"><span class="report-detail-icon" aria-hidden="true"></span><div><strong>{{ selectedReportTab === 'patients' ? 'Patient detail export' : 'Record-level detail' }}</strong><p>{{ selectedReportTab === 'patients' ? 'Export will include every patient detail row for the selected date range.' : 'Record-level rows will be available in the selected report export.' }} Workbook column mapping is required to load source records.</p></div></div>
-            }
-          }
-        </div>
-      </section>
-      <footer class="page-footer"><span>CASEPULSE <span></span> REPORTS</span><span>Choose a date range to view report data</span></footer>
+      <app-reports [vm]="this" />
       } @else {
       <section class="page-heading">
-        <div><div class="eyebrow"><span class="eyebrow-line"></span>{{ teamWorkloadView ? 'TEAM ACTIVITIES' : dashboardView ? 'CASE DASHBOARD' : riskSummaryView ? 'VULNARABILITIES' : 'SALESFORCE' }}</div><h1>{{ teamWorkloadView ? 'Team workload' : dashboardView ? 'Case Dashboard' : riskSummaryView ? 'Risk Summary' : 'Case Tracker' }}</h1><p class="page-subtitle">{{ teamWorkloadView ? 'Log daily activities, breaks, and working time for each team member.' : dashboardView ? 'Explore trends and breakdowns using the same case filters.' : riskSummaryView ? 'Track security risk work items using the same case filters.' : 'Track case work items and implementation status.' }}</p>@if (dashboardView || teamWorkloadView) { <button type="button" class="quick-filter-button view-toggle" (click)="showCases()">Back to case tracker</button> } @else { <div class="page-view-actions"><button type="button" class="quick-filter-button view-toggle" (click)="showDashboard()">Open Dashboard</button><button type="button" role="switch" class="quick-filter-button risk-toggle" [class.risk-active]="riskSummaryView" [attr.aria-checked]="riskSummaryView" [attr.aria-label]="riskSummaryView ? 'Switch to cases' : 'Switch to risks'" (click)="riskSummaryView ? showCases() : showRiskSummary()"><span class="risk-toggle-track"><span class="risk-toggle-thumb" aria-hidden="true"></span><span class="risk-toggle-option" [class.active]="!riskSummaryView">CASES</span><span class="risk-toggle-option" [class.active]="riskSummaryView">RISKS</span></span></button></div> }</div>
+        <div>@if (!teamWorkloadView) { <div class="eyebrow"><span class="eyebrow-line"></span>{{ dashboardView ? 'SALESFORCE' : riskSummaryView ? 'VULNARABILITIES' : 'SALESFORCE' }}</div> }<h1>{{ teamWorkloadView ? 'Team Capacity & Workload Overview' : dashboardView ? 'Case Dashboard' : riskSummaryView ? 'Risk Summary' : 'Case Tracker' }}</h1>@if (!teamWorkloadView) { <p class="page-subtitle">{{ dashboardView ? 'Explore trends and breakdowns using the same case filters.' : riskSummaryView ? 'Track security risk work items using the same case filters.' : 'Track case work items and implementation status.' }}</p> }@if (dashboardView || teamWorkloadView) { <button type="button" class="quick-filter-button view-toggle" (click)="showCases()">Back to case tracker</button> } @else { <div class="page-view-actions"><button type="button" class="quick-filter-button view-toggle" (click)="showDashboard()">Open Dashboard</button><button type="button" role="switch" class="quick-filter-button risk-toggle" [class.risk-active]="riskSummaryView" [attr.aria-checked]="riskSummaryView" [attr.aria-label]="riskSummaryView ? 'Switch to cases' : 'Switch to risks'" (click)="riskSummaryView ? showCases() : showRiskSummary()"><span class="risk-toggle-track"><span class="risk-toggle-thumb" aria-hidden="true"></span><span class="risk-toggle-option" [class.active]="!riskSummaryView">CASES</span><span class="risk-toggle-option" [class.active]="riskSummaryView">RISKS</span></span></button></div> }</div>
         @if (!dashboardView && !teamWorkloadView) {
         <div class="heading-actions">
           <input #fileInput class="visually-hidden" type="file" accept=".csv,.xlsx" aria-label="Choose a DevOps CSV or Excel file" (change)="importFile($event)" />
-          <button class="button button-secondary" type="button" (click)="chooseFile()" [disabled]="importing"><span class="button-icon upload-icon" aria-hidden="true"></span>{{ importing ? 'Importing...' : 'Import CSV / Excel' }}</button>
-          <button class="button button-primary" type="button" (click)="exportFile()" [disabled]="rows.length === 0 || loading" title="Export the current filtered results"><span class="button-icon download-icon" aria-hidden="true"></span>Export view</button>
+          <button class="button button-secondary" type="button" (click)="chooseFile()" [disabled]="importing"><i class="fa-solid fa-upload" aria-hidden="true"></i>{{ importing ? 'Importing...' : 'Import CSV / Excel' }}</button>
+          <button class="button button-primary" type="button" (click)="exportFile()" [disabled]="rows.length === 0 || loading" title="Export the current filtered results"><i class="fa-solid fa-download" aria-hidden="true"></i>Export view</button>
         </div>
+        }
+        @if (dashboardView) {
+        <article class="summary-card resolution-card dashboard-resolution-card"><div class="summary-top"><span class="summary-label">RESOLUTION RATE</span><span class="summary-symbol resolution-symbol" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span></div><div class="summary-value">{{ resolutionRate.toFixed(1) }}%</div><div class="summary-foot"><span>Delivered to Prod + Done</span><span class="resolution-count">{{ resolutionRateCount }}/{{ total }}</span></div></article>
         }
       </section>
 
       @if (message) {
-        <div class="notice" [class.notice-success]="messageKind === 'success'" role="status"><span class="notice-mark" aria-hidden="true">{{ messageKind === 'success' ? '' : '!' }}</span><span>{{ message }}</span><button type="button" class="notice-close" aria-label="Dismiss message" (click)="message = ''"></button></div>
+        <div class="notice" [class.notice-success]="messageKind === 'success'" role="status"><span class="notice-mark" aria-hidden="true"><i class="fa-solid" [class.fa-check]="messageKind === 'success'" [class.fa-triangle-exclamation]="messageKind !== 'success'"></i></span><span>{{ message }}</span><button type="button" class="notice-close" aria-label="Dismiss message" (click)="message = ''"></button></div>
       }
 
-      @if (!teamWorkloadView) {
+      @if (!teamWorkloadView && !dashboardView) {
       <section class="summary-grid" [attr.aria-label]="riskSummaryView ? 'Filtered risk summary' : 'Filtered case summary'">
-        <article class="summary-card summary-total"><div class="summary-top"><span class="summary-label">WORK ITEMS TILL DATE</span><span class="summary-symbol total-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ total.toLocaleString() }}</div><div class="summary-foot"><span>Matching current filters</span><span class="summary-accent">ALL</span></div></article>
-        <article class="summary-card"><div class="summary-top"><span class="summary-label">IN PROGRESS</span><span class="summary-symbol open-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ openCount.toLocaleString() }}</div><div class="summary-foot"><span>Active states</span><span class="mini-meter"><span [style.width.%]="total ? (openCount / total) * 100 : 0"></span></span></div></article>
-        <article class="summary-card"><div class="summary-top"><span class="summary-label">HIGH PRIORITY</span><span class="summary-symbol priority-symbol" aria-hidden="true">!</span></div><div class="summary-value">{{ priorityCount.toLocaleString() }}</div><div class="summary-foot"><span>Priority 1-2 or high / critical</span><span class="priority-spark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div></article>
-        <button class="summary-card summary-priority-filter" [class.summary-card-selected]="severity.toLowerCase() === 'medium'" type="button" [attr.aria-pressed]="severity.toLowerCase() === 'medium'" (click)="selectPriority('Medium')"><span class="summary-top"><span class="summary-label">MEDIUM PRIORITY</span><span class="summary-symbol areas-symbol" aria-hidden="true"></span></span><span class="summary-value">{{ mediumPriorityCount.toLocaleString() }}</span><span class="summary-foot"><span>Filter medium-priority cases</span></span></button>
-        <button class="summary-card summary-priority-filter" [class.summary-card-selected]="severity.toLowerCase() === 'critical'" type="button" [attr.aria-pressed]="severity.toLowerCase() === 'critical'" (click)="selectPriority('Critical')"><span class="summary-top"><span class="summary-label">CRITICAL PRIORITY</span><span class="summary-symbol priority-symbol" aria-hidden="true">!</span></span><span class="summary-value">{{ criticalPriorityCount.toLocaleString() }}</span><span class="summary-foot"><span>Filter critical-priority cases</span></span></button>
-        <article class="summary-card resolution-card"><div class="summary-top"><span class="summary-label">RESOLUTION RATE</span><span class="summary-symbol resolution-symbol" aria-hidden="true"></span></div><div class="summary-value">{{ resolutionRate.toFixed(1) }}%</div><div class="summary-foot"><span>Delivered to Prod + Done</span><span class="resolution-count">{{ resolutionRateCount }}/{{ total }}</span></div></article>
+        <article class="summary-card summary-total"><div class="summary-top"><span class="summary-label">WORK ITEMS TILL DATE</span><span class="summary-symbol total-symbol" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span></div><div class="summary-value">{{ total.toLocaleString() }}</div><div class="summary-foot"><span>Matching current filters</span><span class="summary-accent">ALL</span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">IN PROGRESS</span><span class="summary-symbol completed-symbol" aria-hidden="true"><i class="fa-solid fa-hourglass-half"></i></span></div><div class="summary-value">{{ openCount.toLocaleString() }}</div><div class="summary-foot"><span>Active states</span><span class="mini-meter"><span [style.width.%]="total ? (openCount / total) * 100 : 0"></span></span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">CRITICAL PRIORITY</span><span class="summary-symbol priority-symbol critical-priority-symbol" aria-hidden="true"><i class="fa-solid fa-fire-flame-curved"></i></span></div><div class="summary-value">{{ criticalPriorityCount.toLocaleString() }}</div><div class="summary-foot"><span>Critical-priority cases</span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">HIGH PRIORITY</span><span class="summary-symbol priority-symbol high-priority-symbol" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span></div><div class="summary-value">{{ priorityCount.toLocaleString() }}</div><div class="summary-foot"><span>Priority 1-2 or high / critical</span><span class="priority-spark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div></article>
+        <article class="summary-card"><div class="summary-top"><span class="summary-label">MEDIUM PRIORITY</span><span class="summary-symbol areas-symbol medium-priority-symbol" aria-hidden="true"><i class="fa-solid fa-gauge-high"></i></span></div><div class="summary-value">{{ mediumPriorityCount.toLocaleString() }}</div><div class="summary-foot"><span>Medium-priority cases</span></div></article>
+        <article class="summary-card resolution-card"><div class="summary-top"><span class="summary-label">RESOLUTION RATE</span><span class="summary-symbol resolution-symbol" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span></div><div class="summary-value">{{ resolutionRate.toFixed(1) }}%</div><div class="summary-foot"><span>Delivered to Prod + Done</span><span class="resolution-count">{{ resolutionRateCount }}/{{ total }}</span></div></article>
       </section>
       }
 
-      @if (!teamWorkloadView) {
+      @if (riskSummaryView && !teamWorkloadView) {
       <section class="filter-panel" [attr.aria-label]="riskSummaryView ? 'Filter risk summary' : 'Filter Salesforce cases'">
-        <div class="filter-heading"><div class="filter-heading-left"><span class="filter-icon" aria-hidden="true"></span><strong>{{ riskSummaryView ? 'Filter risks' : 'Filter cases' }}</strong><span class="filter-hint">Combine area, tag, ownership, and state filters</span>@if (lastDataRefreshLabel; as lastDataRefresh) { <span class="last-data-refresh" aria-live="polite"><strong>Last Data Refresh</strong><span>{{ lastDataRefresh }}</span></span> }</div><div class="filter-heading-actions"><label class="multi-select-toggle"><input type="checkbox" role="switch" [ngModel]="multiSelect" (ngModelChange)="setMultiSelect($event)" aria-label="Enable multi-select for filters" />Multi-select</label><button type="button" class="text-button" (click)="clearFilters()">Clear all <span aria-hidden="true"></span></button></div></div>
+        <div class="filter-heading"><div class="filter-heading-left"><i class="fa-solid fa-filter" aria-hidden="true"></i><strong>{{ riskSummaryView ? 'Filter risks' : 'Filter cases' }}</strong><span class="filter-hint">Combine area, tag, ownership, and state filters</span>@if (lastDataRefreshLabel; as lastDataRefresh) { <span class="last-data-refresh" aria-live="polite"><strong>Last Data Refresh</strong><span>{{ lastDataRefresh }}</span></span> }</div><div class="filter-heading-actions"><label class="multi-select-toggle"><input type="checkbox" role="switch" [ngModel]="multiSelect" (ngModelChange)="setMultiSelect($event)" aria-label="Enable multi-select for filters" />Multi-select</label><button type="button" class="text-button" (click)="clearFilters()">Clear all <span aria-hidden="true"></span></button></div></div>
         <div class="quick-filter-groups">
           <div class="quick-filter-group" role="group" aria-label="Filter by area path">
             <span class="quick-filter-label">AREA PATH</span>
@@ -358,26 +348,44 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
             <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected(prescribingAreaPath)" [attr.aria-pressed]="isAreaSelected(prescribingAreaPath)" (click)="selectArea(prescribingAreaPath)">Prescribing</button>
             <button type="button" class="quick-filter-button" [class.selected]="isAreaSelected(ep2AreaPath)" [attr.aria-pressed]="isAreaSelected(ep2AreaPath)" (click)="selectArea(ep2AreaPath)">eP2 (Team 4)</button>
           </div>
-          <div class="quick-filter-group" role="group" aria-label="Filter by tag">
-            <span class="quick-filter-label">TAGS</span>
+          <div class="quick-filter-group tag-group" role="group" aria-label="Filter by tag">
+            <span class="quick-filter-label">CASE TYPE</span>
             @if (riskSummaryView) {
             <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('ZeroThreat')" [attr.aria-pressed]="isTagSelected('ZeroThreat')" (click)="selectTag('ZeroThreat')">ZeroThreat</button>
             <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Pentest 2026')" [attr.aria-pressed]="isTagSelected('Pentest 2026')" (click)="selectTag('Pentest 2026')">Pentest 2026</button>
             <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('ORCA Scan')" [attr.aria-pressed]="isTagSelected('ORCA Scan')" (click)="selectTag('ORCA Scan')">ORCA Scan</button>
             } @else {
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('External')" [attr.aria-pressed]="isTagSelected('External')" (click)="selectTag('External')">External</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Datasync')" [attr.aria-pressed]="isTagSelected('Datasync')" (click)="selectTag('Datasync')">Datasync</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Internal')" [attr.aria-pressed]="isTagSelected('Internal')" (click)="selectTag('Internal')">Internal</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('DevFixRequired')" [attr.aria-pressed]="isTagSelected('DevFixRequired')" (click)="selectTag('DevFixRequired')">Code Fix (DevFixRequired)</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch1')" [attr.aria-pressed]="isTagSelected('Batch1')" (click)="selectTag('Batch1')">Batch1</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch2')" [attr.aria-pressed]="isTagSelected('Batch2')" (click)="selectTag('Batch2')">Batch2</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch3')" [attr.aria-pressed]="isTagSelected('Batch3')" (click)="selectTag('Batch3')">Batch3</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch4')" [attr.aria-pressed]="isTagSelected('Batch4')" (click)="selectTag('Batch4')">Batch4</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Batch5')" [attr.aria-pressed]="isTagSelected('Batch5')" (click)="selectTag('Batch5')">Batch5</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Hospitals')" [attr.aria-pressed]="isTagSelected('Hospitals')" (click)="selectTag('Hospitals')">Hospitals</button>
-            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Pilot Case')" [attr.aria-pressed]="isTagSelected('Pilot Case')" (click)="selectTag('Pilot Case')">Pilot Case</button>
+            @if (isTeam4Selected) {
+            @for (tag of team4Tags; track tag) { <button type="button" class="quick-filter-button" [class.selected]="isTagSelected(tag)" [attr.aria-pressed]="isTagSelected(tag)" (click)="selectTag(tag)">{{ tag }}</button> }
+            } @else {
+            <div class="source-toggle" role="group" aria-label="Case source filter">
+              @for (source of caseSources; track source.value) { <button type="button" [ngClass]="'source-' + source.value" [class.on]="caseSource === source.value" [attr.aria-pressed]="caseSource === source.value" (click)="selectCaseSource(source.value)">{{ source.label }}</button> }
+            </div>
+            }
             }
           </div>
+          @if (!riskSummaryView) {
+          <div class="quick-filter-group tag-group" role="group" aria-label="Filter by category">
+            <span class="quick-filter-label">CATEGORY</span>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Datasync')" [attr.aria-pressed]="isTagSelected('Datasync')" (click)="selectTag('Datasync')">Datasync</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('DevFixRequired')" [attr.aria-pressed]="isTagSelected('DevFixRequired')" (click)="selectTag('DevFixRequired')">Code Fix (DevFixRequired)</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Feature')" [attr.aria-pressed]="isTagSelected('Feature')" (click)="selectTag('Feature')">Feature</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Validation')" [attr.aria-pressed]="isTagSelected('Validation')" (click)="selectTag('Validation')">No Fix</button>
+                        <button type="button" class="quick-filter-button" [class.selected]="isTagSelected('Others')" [attr.aria-pressed]="isTagSelected('Others')" (click)="selectTag('Others')">Others</button>
+                      </div>
+                      <div class="quick-filter-group tag-group" role="group" aria-label="Filter by batches">
+            <span class="quick-filter-label">BATCHES</span>
+            @if (isTeam4Selected) { @for (tag of team4Tags; track tag) { <button type="button" class="quick-filter-button" [class.selected]="isTagSelected(tag)" [attr.aria-pressed]="isTagSelected(tag)" (click)="selectTag(tag)">{{ tag }}</button> } } @else {
+            <div class="rollout-toggle" role="group" aria-label="Rollout or non rollout">
+              <button type="button" [class.on]="rolloutActive" [attr.aria-pressed]="rolloutActive" (click)="toggleRollout()"><i class="fa-solid fa-rocket" aria-hidden="true"></i>Rollout</button>
+              <button type="button" [class.on]="nonRolloutActive" [attr.aria-pressed]="nonRolloutActive" (click)="toggleNonRollout()"><i class="fa-solid fa-ban" aria-hidden="true"></i>Non Rollout</button>
+            </div>
+            @if (rolloutActive) {
+            @for (item of rolloutBatchTags; track item.tag) { <button type="button" class="quick-filter-button" [class.selected]="isTagSelected(item.tag)" [attr.aria-pressed]="isTagSelected(item.tag)" (click)="selectBatchTag(item.tag)">{{ item.label }}</button> }
+            }
+            }
+                      </div>
+                      }
           <div class="quick-filter-group" role="group" aria-label="Filter by ownership">
             <span class="quick-filter-label">OWNERSHIP</span>
             <button type="button" class="quick-filter-button" [class.selected]="isOwnershipSelected('Developer')" [attr.aria-pressed]="isOwnershipSelected('Developer')" (click)="selectOwnership('Developer')">Developer</button>
@@ -387,17 +395,79 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
           </div>
           <div class="quick-filter-group" role="group" aria-label="Filter by state">
             <span class="quick-filter-label">STATE</span>
-            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'resolved'" [attr.aria-pressed]="stateFilter === 'resolved'" (click)="selectState('resolved')">Resolved / Closed</button>
-            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'opened'" [attr.aria-pressed]="stateFilter === 'opened'" (click)="selectState('opened')">Opened</button>
-            <button type="button" class="quick-filter-button" [class.selected]="stateFilter === 'awaitingImplementation'" [attr.aria-pressed]="stateFilter === 'awaitingImplementation'" (click)="selectState('awaitingImplementation')">Awaiting Implementation</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isStateSelected('resolved')" [attr.aria-pressed]="isStateSelected('resolved')" (click)="selectState('resolved')">Resolved / Closed</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isStateSelected('opened')" [attr.aria-pressed]="isStateSelected('opened')" (click)="selectState('opened')">Opened</button>            <button type="button" class="quick-filter-button" [class.selected]="isStateSelected('reopened')" [attr.aria-pressed]="isStateSelected('reopened')" (click)="selectState('reopened')">Reopened</button>
+            <button type="button" class="quick-filter-button" [class.selected]="isStateSelected('awaitingImplementation')" [attr.aria-pressed]="isStateSelected('awaitingImplementation')" [disabled]="!isTeam4Selected" (click)="selectState('awaitingImplementation')">Awaiting Implementation</button>
           </div>
         </div>
         <div class="filter-fields">
           <fieldset class="filter-control age-control"><legend>CREATED AGE <span class="unit">DAYS</span></legend><div class="age-inputs"><input type="number" min="0" [(ngModel)]="ageMinDays" placeholder="Min" aria-label="Minimum age in days" /><span>to</span><input type="number" min="0" [(ngModel)]="ageMaxDays" placeholder="Max" aria-label="Maximum age in days" /></div></fieldset>
-          <label class="filter-control"><span>SEVERITY / PRIORITY</span><input type="text" [(ngModel)]="severity" placeholder="e.g. High, 1" (keydown.enter)="applyFilters()" /></label>
-          <label class="filter-control tags-control"><span>TAGS</span><input type="text" [ngModel]="riskSummaryView ? riskSummaryTags : tags" (ngModelChange)="setTagFilter($event)" [placeholder]="riskSummaryView ? 'ORCA Scan, Pentest 2026, ZeroThreat...' : 'Batch1, Hospitals, Pilot Case...'" (keydown.enter)="applyFilters()" /></label>
+          <label class="filter-control"><span>SEVERITY / PRIORITY</span><select [(ngModel)]="severity" aria-label="Severity or priority"><option value="">All priorities</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></label>
+          <label class="filter-control tags-control"><span>TAGS</span><select [ngModel]="riskSummaryView ? riskSummaryTags : tags" (ngModelChange)="setTagFilter($event)" aria-label="Tags">@if (riskSummaryView) {<option value="">All risk tags</option><option value="ORCA Scan">ORCA Scan</option><option value="Pentest 2026">Pentest 2026</option><option value="ZeroThreat">ZeroThreat</option>} @else {<option value="">All tags</option><option value="Reopened">Reopened</option><option value="Datasync">Datasync</option><option value="DevFixRequired">Code Fix (DevFixRequired)</option><option value="Feature">Feature</option><option value="Validation">No Fix</option><option value="Pilot Case">Pilot</option><option value="Batch1">Batch1</option><option value="Batch2">Batch2</option><option value="Batch3">Batch3</option><option value="Batch4">Batch4</option><option value="Batch5">Batch5</option><option value="Hospitals">Hospitals</option>}</select></label>
           <label class="filter-control assigned-control"><span>ASSIGNED TO</span><input type="text" [(ngModel)]="assignedTo" placeholder="Name or email" (keydown.enter)="applyFilters()" /></label>
-          <button type="button" class="apply-button" (click)="applyFilters()" [disabled]="loading"><span class="search-icon" aria-hidden="true"></span>Apply</button>
+          <label class="filter-control search-id-control"><span>SEARCH BY ID</span><input type="search" [(ngModel)]="searchId" placeholder="ID, Salesforce ID, or Site ID" (keydown.enter)="applyFilters()" /></label>
+          <button type="button" class="apply-button" (click)="applyFilters()" [disabled]="loading"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>Apply</button>
+        </div>
+      </section>
+      }
+
+      @if (!dashboardView && !riskSummaryView && !teamWorkloadView) {
+      <section class="alternative-filter-panel" aria-label="Case filter workspace">
+        <div class="alternative-filter-heading">
+          <div><span class="alternative-filter-kicker">FILTER WORKSPACE</span><h2>Case filter workspace</h2><p>Use the same case filters in a grouped view.</p></div>
+          <div class="alternative-filter-heading-right">@if (lastDataRefreshLabel; as lastDataRefresh) { <span class="alternative-last-refresh"><strong>Last Data Refresh</strong><span>{{ lastDataRefresh }}</span></span> }<div class="alternative-filter-actions"><label class="multi-select-toggle"><input type="checkbox" role="switch" [ngModel]="multiSelect" (ngModelChange)="setMultiSelect($event)" aria-label="Enable multi-select for case filter workspace" />Multi-select</label><button type="button" class="text-button" (click)="clearFilters()">Reset filters <span aria-hidden="true"></span></button></div></div>
+        </div>
+        <div class="alternative-filter-grid">
+          <fieldset class="alternative-filter-card"><legend>AREA PATH</legend><div class="alternative-filter-options">
+            <button type="button" class="alternative-filter-option" [class.selected]="isAreaSelected('Accounting')" [attr.aria-pressed]="isAreaSelected('Accounting')" (click)="selectArea('Accounting')">Accounting</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isAreaSelected('Core')" [attr.aria-pressed]="isAreaSelected('Core')" (click)="selectArea('Core')">Core</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isAreaSelected(prescribingAreaPath)" [attr.aria-pressed]="isAreaSelected(prescribingAreaPath)" (click)="selectArea(prescribingAreaPath)">Prescribing</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isAreaSelected(ep2AreaPath)" [attr.aria-pressed]="isAreaSelected(ep2AreaPath)" (click)="selectArea(ep2AreaPath)">eP2 (Team 4)</button>
+          </div></fieldset>
+          <fieldset class="alternative-filter-card case-type-card"><legend>CASE TYPE &amp; CATEGORY</legend>
+            <div class="source-toggle" role="group" aria-label="Case source filter">
+              @for (source of caseSources; track source.value) { <button type="button" [ngClass]="'source-' + source.value" [class.on]="caseSource === source.value" [attr.aria-pressed]="caseSource === source.value" (click)="selectCaseSource(source.value)">{{ source.label }}</button> }
+            </div>
+            <div class="alternative-filter-options">
+            <button type="button" class="alternative-filter-option" [class.selected]="isWorkspaceCategorySelected('Datasync')" [attr.aria-pressed]="isWorkspaceCategorySelected('Datasync')" (click)="selectWorkspaceCategory('Datasync')">Datasync</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isWorkspaceCategorySelected('DevFixRequired')" [attr.aria-pressed]="isWorkspaceCategorySelected('DevFixRequired')" (click)="selectWorkspaceCategory('DevFixRequired')">Code Fix</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isWorkspaceCategorySelected('Feature')" [attr.aria-pressed]="isWorkspaceCategorySelected('Feature')" (click)="selectWorkspaceCategory('Feature')">Feature</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isTagSelected('Validation')" [attr.aria-pressed]="isTagSelected('Validation')" (click)="selectTag('Validation')">No Fix</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isTagSelected('Others')" [attr.aria-pressed]="isTagSelected('Others')" (click)="selectTag('Others')">            Others</button>
+                      </div></fieldset>
+          <fieldset class="alternative-filter-card batches-card"><legend>BATCHES</legend>
+            @if (!isTeam4Selected) {
+            <div class="rollout-toggle" role="group" aria-label="Rollout or non rollout">
+              <button type="button" [class.on]="rolloutActive" [attr.aria-pressed]="rolloutActive" (click)="toggleRollout()">Rollout</button>
+              <button type="button" [class.on]="nonRolloutActive" [attr.aria-pressed]="nonRolloutActive" (click)="toggleNonRollout()">Non Rollout</button>
+            </div>
+            }
+            <div class="alternative-filter-options">
+            @if (isTeam4Selected) { @for (tag of team4Tags; track tag) { <button type="button" class="alternative-filter-option" [class.selected]="isTagSelected(tag)" [attr.aria-pressed]="isTagSelected(tag)" (click)="selectTag(tag)">{{ tag }}</button> } } @else {
+            @if (rolloutActive) {
+            @for (item of rolloutBatchTags; track item.tag) { <button type="button" class="alternative-filter-option" [class.selected]="isTagSelected(item.tag)" [attr.aria-pressed]="isTagSelected(item.tag)" (click)="selectBatchTag(item.tag)">{{ item.label }}</button> }
+            } @else if (!nonRolloutActive) {
+            <span class="batches-hint">Choose Rollout to filter by batch</span>
+            }
+            }
+                      </div></fieldset>
+          <fieldset class="alternative-filter-card"><legend>OWNERSHIP</legend><div class="alternative-filter-options">
+            @for (owner of ['Developer', 'QA', 'App Support', 'Unassigned']; track owner) { <button type="button" class="alternative-filter-option" [class.selected]="isOwnershipSelected(owner)" [attr.aria-pressed]="isOwnershipSelected(owner)" (click)="selectOwnership(owner)">{{ owner }}</button> }
+          </div></fieldset>
+          <fieldset class="alternative-filter-card"><legend>STATE</legend><div class="alternative-filter-options">
+            <button type="button" class="alternative-filter-option" [class.selected]="isStateSelected('resolved')" [attr.aria-pressed]="isStateSelected('resolved')" (click)="selectState('resolved')">Resolved / Closed</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isStateSelected('opened')" [attr.aria-pressed]="isStateSelected('opened')" (click)="selectState('opened')">Opened</button>            <button type="button" class="alternative-filter-option" [class.selected]="isStateSelected('reopened')" [attr.aria-pressed]="isStateSelected('reopened')" (click)="selectState('reopened')">Reopened</button>
+            <button type="button" class="alternative-filter-option" [class.selected]="isStateSelected('awaitingImplementation')" [attr.aria-pressed]="isStateSelected('awaitingImplementation')" [disabled]="!isTeam4Selected" (click)="selectState('awaitingImplementation')">Awaiting Implementation</button>
+          </div></fieldset>
+          <fieldset class="alternative-filter-card alternative-date-card"><legend>CREATED DATE RANGE</legend><div class="alternative-date-fields"><label><span>FROM</span><input type="date" [(ngModel)]="dateFrom" (change)="applyFilters()" aria-label="Workspace created date from" /></label><label><span>TO</span><input type="date" [(ngModel)]="dateTo" (change)="applyFilters()" aria-label="Workspace created date to" /></label></div><button class="date-reset-icon" type="button" (click)="clearDateRange()" aria-label="Clear date filters" title="Clear date filters"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></fieldset>
+          <div class="alternative-filter-card alternative-filter-fields">
+            <label><span>CREATED AGE</span><div class="alternative-age-inputs"><input type="number" min="0" [(ngModel)]="ageMinDays" placeholder="Min" aria-label="Alternative minimum age in days" /><b>to</b><input type="number" min="0" [(ngModel)]="ageMaxDays" placeholder="Max" aria-label="Alternative maximum age in days" /></div></label>
+            <label><span>PRIORITY</span><select [(ngModel)]="severity" aria-label="Alternative severity or priority"><option value="">All priorities</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></label>
+            <label><span>TAGS</span><select [ngModel]="tags" (ngModelChange)="setTagFilter($event)" aria-label="Alternative tags"><option value="">All tags</option><option value="Reopened">Reopened</option><option value="Datasync">Datasync</option><option value="DevFixRequired">Code Fix</option><option value="Feature">Feature</option><option value="Validation">No Fix</option><option value="Pilot Case">Pilot</option><option value="Batch1">Batch1</option><option value="Batch2">Batch2</option><option value="Batch3">Batch3</option><option value="Batch4">Batch4</option><option value="Batch5">Batch5</option><option value="Hospitals">Hospitals</option></select></label>
+            <label><span>ASSIGNED TO</span><input type="text" [(ngModel)]="assignedTo" placeholder="Name or email" (keydown.enter)="applyFilters()" /></label>
+            <label><span>SEARCH BY ID</span><input type="search" [(ngModel)]="searchId" placeholder="ID, Salesforce ID, or Site ID" (keydown.enter)="applyFilters()" /></label>
+            <button type="button" class="alternative-apply-button" (click)="applyFilters()" [disabled]="loading">Apply filters</button>
+          </div>
         </div>
       </section>
       }
@@ -409,8 +479,8 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
             <div class="date-range">
               <label class="date-filter-control"><span>START DATE</span><input type="date" [(ngModel)]="dateFrom" (change)="applyFilters()" aria-label="Dashboard start date" /></label>
               <label class="date-filter-control"><span>END DATE</span><input type="date" [(ngModel)]="dateTo" (change)="applyFilters()" aria-label="Dashboard end date" /></label>
-              @if (dateFrom || dateTo) { <button class="text-button clear-date-button" type="button" (click)="clearDateRange()">Clear dates</button> }
-              <button class="button button-primary print-button" type="button" (click)="printDashboard()" [disabled]="dateRangeInvalid" title="Print charts or save the report as a PDF"><span class="print-button-icon" aria-hidden="true"></span>Print / Save PDF</button>
+              @if (dateFrom || dateTo) { <button class="date-reset-icon" type="button" (click)="clearDateRange()" aria-label="Clear date filters" title="Clear date filters"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button> }
+              <button class="button button-primary print-button" type="button" (click)="printDashboard()" [disabled]="dateRangeInvalid" title="Print charts or save the report as a PDF"><i class="fa-solid fa-print" aria-hidden="true"></i>Print / Save PDF</button>
             </div>
           </div>
           <header class="print-report-header">
@@ -424,7 +494,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
             <div class="notice" role="alert">Start date must be on or before end date.</div>
           } @else {
             <div class="chart-grid">
-              <article class="chart-card monthly-chart-card">
+              <!-- <article class="chart-card monthly-chart-card">
                 <div class="chart-heading"><div><h3>{{ monthlyTrendTitle }}</h3><p>Monthly case creation trend</p></div><div class="chart-heading-metrics"><strong>{{ monthlyChart.length }} months</strong><small>Peak {{ monthlyPeak?.label ?? '' }} - {{ monthlyPeak?.count ?? 0 }} | Avg {{ monthlyAverage }}</small></div></div>
                 @if (monthlyChart.length) {
                   <div class="chart-overflow">
@@ -438,7 +508,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                       <polygon class="trend-area" [attr.points]="monthlyTrendAreaPoints" />
                       <polyline class="trend-line" [attr.points]="monthlyTrendPoints" />
                       @for (point of monthlyChart; track point.label) {
-                        <circle class="trend-point" [attr.cx]="point.x" [attr.cy]="point.y" r="5"><title>{{ point.label }}: {{ point.count }} cases</title></circle>
+                        <circle class="trend-point chart-clickable" [attr.cx]="point.x" [attr.cy]="point.y" r="5" tabindex="0" (click)="selectMonthlyBar(point)" (keydown.enter)="selectMonthlyBar(point)" (keydown.space)="selectMonthlyBar(point); $event.preventDefault()"><title>{{ point.label }}: {{ point.count }} cases</title></circle>
                         <text class="month-label" [attr.x]="point.x" y="211" text-anchor="middle">{{ point.label }}</text>
                         <text class="point-value" [attr.x]="point.x" [attr.y]="point.y - 10" text-anchor="middle">{{ point.count }}</text>
                       }
@@ -453,7 +523,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                     }
                   </div>
                 </section>
-              </article>
+              </article> -->
               <article class="chart-card monthly-chart-card">
                 <div class="chart-heading"><div><h3>{{ monthlyVolumeTitle }}</h3><p>Bar view  exact count per month</p></div><strong>{{ monthlyTotal }} cases</strong></div>
                 @if (monthlyChart.length) {
@@ -465,7 +535,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                       }
                       <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text>
                       @for (bar of monthlyBarRects; track bar.label) {
-                        <rect class="monthly-bar" [attr.x]="bar.rectX" [attr.y]="bar.rectY" [attr.width]="bar.rectWidth" [attr.height]="bar.rectHeight" rx="3"><title>{{ bar.label }}: {{ bar.count }} cases</title></rect>
+                        <rect class="monthly-bar chart-clickable" [attr.x]="bar.rectX" [attr.y]="bar.rectY" [attr.width]="bar.rectWidth" [attr.height]="bar.rectHeight" rx="3" tabindex="0" (click)="selectMonthlyBar(bar)" (keydown.enter)="selectMonthlyBar(bar)" (keydown.space)="selectMonthlyBar(bar); $event.preventDefault()"><title>{{ bar.label }}: {{ bar.count }} cases</title></rect>
                         <text class="point-value" [attr.x]="bar.x" [attr.y]="bar.rectY - 7" text-anchor="middle">{{ bar.count }}</text>
                         <text class="month-label" [attr.x]="bar.x" y="211" text-anchor="middle">{{ bar.label }}</text>
                       }
@@ -481,12 +551,70 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                   </div>
                 </section>
               </article>
-              <article class="chart-card">
+              <article class="chart-card site-id-chart-card">
+                <div class="chart-heading"><div><h3>SITEID Case Overview</h3><p>Cases grouped by Site ID; top 10 sites by case count</p></div><strong>{{ siteIdChart.length }} sites</strong></div>
+                @if (siteIdChart.length) {
+                  <div class="chart-overflow">
+                    <svg class="site-id-bars monthly-bars" [attr.viewBox]="'0 0 ' + siteIdChartWidth + ' 236'" role="img" aria-label="Site ID case overview bar chart">
+                      @for (tick of siteIdChartTicks; track tick.value) { <line class="chart-gridline" x1="68" [attr.y1]="tick.y" [attr.x2]="siteIdChartAxisRight" [attr.y2]="tick.y" /><text class="axis-value" x="58" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.value }}</text> }
+                      <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text><text class="axis-title" [attr.x]="siteIdChartWidth / 2" y="232" text-anchor="middle">Site IDs</text>
+                      @for (bar of siteIdChart; track bar.label) { <rect class="monthly-bar chart-clickable" [style.fill]="bar.color" [attr.x]="bar.rectX" [attr.y]="bar.rectY" [attr.width]="bar.rectWidth" [attr.height]="bar.rectHeight" rx="3" tabindex="0" (click)="selectSiteIdBar(bar.label)" (keydown.enter)="selectSiteIdBar(bar.label)" (keydown.space)="selectSiteIdBar(bar.label); $event.preventDefault()"><title>{{ bar.label }}: {{ bar.count }} cases</title></rect><text class="point-value" [attr.x]="bar.x" [attr.y]="bar.rectY - 7" text-anchor="middle">{{ bar.count }}</text><text class="month-label" [attr.x]="bar.x" y="211" text-anchor="middle">{{ bar.label }}</text> }
+                    </svg>
+                  </div>
+                } @else { <p class="chart-empty">No Site IDs match these filters.</p> }
+              </article>
+              <article class="chart-card case-category-chart-card">
+                <div class="chart-heading"><div><h3>CASE TYPE &amp; CATEGORY</h3><p>Cases grouped by category tags</p></div><strong>{{ caseCategoryChartTotal }} cases</strong></div>
+                <div class="chart-overflow">
+                  <svg class="case-category-bars monthly-bars" viewBox="0 0 640 236" role="img" aria-label="Bar chart of cases by case type and category tag">
+                    @for (tick of caseCategoryChartTicks; track tick.value) { <line class="chart-gridline" x1="68" [attr.y1]="tick.y" x2="612" [attr.y2]="tick.y" /><text class="axis-value" x="58" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.value }}</text> }
+                    <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text><text class="axis-title" x="340" y="232" text-anchor="middle">Case type &amp; category</text>
+                    @for (bar of caseCategoryChart; track bar.label) { <rect class="case-category-bar chart-clickable" [attr.fill]="bar.color" [attr.x]="bar.rectX" [attr.y]="bar.rectY" [attr.width]="bar.rectWidth" [attr.height]="bar.rectHeight" rx="3" tabindex="0" (click)="selectCaseCategoryBar(bar.label)" (keydown.enter)="selectCaseCategoryBar(bar.label)" (keydown.space)="selectCaseCategoryBar(bar.label); $event.preventDefault()"><title>{{ bar.label }}: {{ bar.count }} cases</title></rect><text class="point-value" [attr.x]="bar.x" [attr.y]="bar.rectY - 7" text-anchor="middle">{{ bar.count }}</text><text class="month-label" [attr.x]="bar.x" y="211" text-anchor="middle">{{ bar.label }}</text> }
+                  </svg>
+                </div>
+              </article>
+              <article class="chart-card rollout-line-card">
+                <div class="chart-heading"><div><h3>CASES BY ROLLOUT BATCH</h3><p>Cases received per batch for the selected filters</p></div><strong>{{ rolloutLineTotal }} cases</strong></div>
+                <div class="rollout-line-wrap">
+                  <svg class="monthly-bars" viewBox="0 0 640 236" role="img" aria-label="Line graph of cases received by rollout batch">
+                    @for (tick of rolloutLineTicks; track tick.value) { <line class="chart-gridline" x1="68" [attr.y1]="tick.y" x2="612" [attr.y2]="tick.y" /><text class="axis-value" x="58" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.value }}</text> }
+                    <text class="axis-title" x="15" y="108" transform="rotate(-90 15 108)">Cases</text><text class="axis-title" x="340" y="232" text-anchor="middle">Rollout batch</text>
+                    <path class="rollout-line" [attr.d]="rolloutLinePath" fill="none" stroke="#2f7d5b" stroke-width="2.5" stroke-linejoin="round" />
+                    @for (point of rolloutLineChart; track point.label) {
+                      <text class="month-label" [attr.x]="point.x" y="211" text-anchor="middle">{{ point.label }}</text>
+                      <text class="point-value" [attr.x]="point.x" [attr.y]="point.y - 10" text-anchor="middle">{{ point.count }}</text>
+                      <circle class="rollout-point chart-clickable" [attr.cx]="point.x" [attr.cy]="point.y" r="6" fill="#fff" stroke="#2f7d5b" stroke-width="2.5" tabindex="0" (mouseenter)="hoveredRolloutPoint = point.label" (mouseleave)="hoveredRolloutPoint = null" (focus)="hoveredRolloutPoint = point.label" (blur)="hoveredRolloutPoint = null" (click)="selectBatchBar(point.label)" />
+                    }
+                  </svg>
+                  @for (point of rolloutLineChart; track point.label) {
+                    @if (hoveredRolloutPoint === point.label) {
+                      <div class="rollout-tooltip" role="tooltip" [style.left.%]="point.leftPct" [style.top.%]="point.topPct">
+                        <strong>{{ point.count }} cases</strong>
+                        <span><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Stage: {{ point.stage }}</span>
+                        <span><i class="fa-solid fa-calendar-days" aria-hidden="true"></i>Released: {{ point.releasedDate || 'Not released yet' }}</span>
+                        <span><i class="fa-solid fa-hospital" aria-hidden="true"></i>Sites rolled out: {{ point.sites ?? 'â€”' }}</span>
+                      </div>
+                    }
+                  }
+                </div>
+              </article>
+              <article class="chart-card state-chart-card">
                 <h3>{{ stateChartTitle }}</h3>
                 @if (stateChart.length) {
-                  <div class="bar-list">@for (item of stateChart; track item.label) {
-                    <div class="bar-row"><span>{{ item.label }}</span><span class="bar-track"><i [style.width.%]="item.percent" [style.backgroundColor]="item.color"></i></span><strong>{{ item.value }}</strong></div>
-                  }</div>
+                  <div class="state-groups">
+                    <section class="state-group resolved-state-group" aria-label="Resolved cases">
+                      <div class="state-group-heading"><strong>Resolved cases <b class="state-group-count">{{ resolvedStateTotal }}</b></strong><span>Delivered to PROD + Done + Removed</span></div>
+                      <div class="bar-list">@for (item of resolvedStateChart; track item.label) {
+                        <div class="bar-row chart-clickable" tabindex="0" (click)="selectStateBar(item.label)" (keydown.enter)="selectStateBar(item.label)" (keydown.space)="selectStateBar(item.label); $event.preventDefault()"><span>{{ item.label }}</span><span class="bar-track"><i [style.width.%]="item.percent" [style.backgroundColor]="item.color"></i></span><strong>{{ item.value }}</strong></div>
+                      }</div>
+                    </section>
+                    <section class="state-group unresolved-state-group" aria-label="Unresolved cases under L3">
+                      <div class="state-group-heading"><strong>Unresolved cases under L3 <b class="state-group-count">{{ unresolvedStateTotal }}</b></strong><span>All stages except Delivered to PROD, Done, and Removed</span></div>
+                      <div class="bar-list">@for (item of unresolvedStateChart; track item.label) {
+                        <div class="bar-row chart-clickable" tabindex="0" (click)="selectStateBar(item.label)" (keydown.enter)="selectStateBar(item.label)" (keydown.space)="selectStateBar(item.label); $event.preventDefault()"><span>{{ item.label }}</span><span class="bar-track"><i [style.width.%]="item.percent" [style.backgroundColor]="item.color"></i></span><strong>{{ item.value }}</strong></div>
+                      }</div>
+                    </section>
+                  </div>
                 } @else { <p class="chart-empty">No cases match these filters.</p> }
                 <section class="print-only chart-report-summary" aria-label="State distribution summary">
                   <h4>State analysis</h4><p>{{ statePrintSummary }}</p>
@@ -502,21 +630,21 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                 @if (batchResolutionChart.length) {
                   <div class="batch-resolution-list" role="list" aria-label="Batch-wise resolution rates">
                     @for (batch of batchResolutionChart; track batch.label) {
-                      <div class="batch-resolution-row" role="listitem">
+                      <div class="batch-resolution-row chart-clickable" role="listitem" tabindex="0" (click)="selectBatchBar(batch.label)" (keydown.enter)="selectBatchBar(batch.label)" (keydown.space)="selectBatchBar(batch.label); $event.preventDefault()">
                         <div class="batch-resolution-label"><span>{{ batch.label }}</span><strong>{{ batch.rate.toFixed(1) }}%</strong><small>{{ batch.resolved }}/{{ batch.total }} resolved</small></div>
                         <div class="batch-resolution-track" role="meter" [attr.aria-label]="batch.label + ' resolution rate'" [attr.aria-valuenow]="batch.rate" aria-valuemin="0" aria-valuemax="100"><i [style.width.%]="batch.rate" [style.backgroundColor]="batch.color"></i></div>
                       </div>
                     }
                   </div>
                 } @else { <p class="chart-empty">No batch tags match these filters.</p> }
-              </article>              <article class="chart-card">
+              </article>              <article class="chart-card priority-chart-card">
                 <div class="chart-heading"><div><h3>{{ priorityChartTitle }}</h3><p>Priority distribution for filtered cases</p></div><strong>{{ resolutionRate.toFixed(1) }}% resolved</strong></div>
                 <div class="priority-chart" role="img" [attr.aria-label]="'Priority distribution with a resolution rate of ' + resolutionRate.toFixed(1) + ' percent. ' + priorityChart.map(item => item.label + ': ' + item.value + ' cases, ' + item.percent.toFixed(1) + ' percent').join('. ')+'.'">
                   <div class="priority-donut-wrap">
                     <svg class="priority-donut" viewBox="0 0 184 184" aria-hidden="true">
                       <circle cx="92" cy="92" r="70" class="priority-donut-base" />
                       @for (segment of priorityDonutSegments; track segment.label) {
-                        <circle cx="92" cy="92" r="70" fill="none" [attr.stroke]="segment.color" [attr.stroke-dasharray]="segment.dash" [attr.stroke-dashoffset]="segment.offset" class="priority-donut-segment" transform="rotate(-90 92 92)" />
+                        <circle cx="92" cy="92" r="70" fill="none" [attr.stroke]="segment.color" [attr.stroke-dasharray]="segment.dash" [attr.stroke-dashoffset]="segment.offset" class="priority-donut-segment chart-clickable" [class.priority-donut-segment-selected]="selectedPriorityChartLabel === segment.label" [class.priority-donut-segment-muted]="selectedPriorityChartLabel && selectedPriorityChartLabel !== segment.label" transform="rotate(-90 92 92)" tabindex="0" (click)="selectPriorityBar(segment.label)" (keydown.enter)="selectPriorityBar(segment.label)" (keydown.space)="selectPriorityBar(segment.label); $event.preventDefault()" />
                       }
                       <text class="priority-donut-total" x="92" y="88" text-anchor="middle">{{ total.toLocaleString() }}</text>
                       <text class="priority-donut-caption" x="92" y="106" text-anchor="middle">CASES</text>
@@ -525,7 +653,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
                   </div>
                   <div class="priority-legend" role="list">
                     @for (item of priorityChart; track item.label) {
-                      <div class="priority-legend-row" role="listitem">
+                      <div class="priority-legend-row chart-clickable" [class.priority-legend-row-selected]="selectedPriorityChartLabel === item.label" [class.priority-legend-row-muted]="selectedPriorityChartLabel && selectedPriorityChartLabel !== item.label" role="listitem" tabindex="0" (click)="selectPriorityBar(item.label)" (keydown.enter)="selectPriorityBar(item.label)" (keydown.space)="selectPriorityBar(item.label); $event.preventDefault()">
                         <span class="priority-swatch" [style.backgroundColor]="item.color"></span>
                         <span class="priority-legend-label">{{ item.label }}</span>
                         <strong>{{ item.value.toLocaleString() }}</strong>
@@ -552,69 +680,106 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
 
       @if (teamWorkloadView) {
         <section class="team-workload" aria-label="Team workload dashboard">
-          <div class="team-toolbar">
-            <label><span>TEAM MEMBER</span><select [(ngModel)]="selectedTeamMember" (change)="loadTeamActivities()" aria-label="Select team member">@for (member of teamMembers; track member) { <option [value]="member">{{ member }}</option> }</select></label>
-            <label><span>ACTIVITY DATE</span><input type="date" [(ngModel)]="selectedActivityDate" (change)="loadTeamActivities()" aria-label="Select activity date" /></label>
-            <button type="button" class="icon-button" (click)="loadTeamActivities()" aria-label="Refresh activities" title="Refresh activities"></button>
+          <div class="page-heading monitoring-heading workload-actions-row">
+            <div class="heading-actions monitoring-actions">
+              <button class="button button-secondary" type="button" (click)="downloadWorkloadTemplate()"><i class="fa-solid fa-file-excel" aria-hidden="true"></i>Export template</button>
+              <label class="button button-secondary monitoring-import"><i class="fa-solid fa-upload" aria-hidden="true"></i>Import<input type="file" accept=".xlsx,.csv" hidden (change)="importWorkload($event)" /></label>
+              <button class="button button-secondary" type="button" (click)="loadWorkloadSampleData()" [disabled]="workloadLoading"><i class="fa-solid fa-database" aria-hidden="true"></i>Load sample data</button>
+              <button class="button button-secondary" type="button" (click)="exportWorkloadExcel()" [disabled]="!workloadRows.length"><i class="fa-solid fa-file-export" aria-hidden="true"></i>Export Excel</button>
+              <button class="button button-primary" type="button" (click)="exportWorkloadPdf()" [disabled]="!workloadRows.length"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i>Export PDF</button>
+            </div>
+          </div>
+          @if (workloadMessage) { <div class="notice" [class.notice-success]="workloadMessageKind === 'success'" role="alert"><span>{{ workloadMessage }}</span><button type="button" class="notice-close" aria-label="Dismiss" (click)="workloadMessage = ''">Ã—</button></div> }
+          <div class="workload-controls">
+            <div class="workload-tabs" role="tablist" aria-label="Resource">
+              @for (resource of workloadResources; track resource) {
+                <button type="button" role="tab" class="workload-tab" [class.selected]="workloadResource === resource" [class.over]="(workloadStats[resource]?.exceededMinutes ?? 0) > 0" [attr.aria-selected]="workloadResource === resource" (click)="selectWorkloadResource(resource)">
+                  <span>{{ resource }}</span>
+                  <small>{{ formatWorkMinutes(workloadStats[resource]?.workedMinutes ?? 0) }}@if ((workloadStats[resource]?.exceededMinutes ?? 0) > 0) { <b class="over-badge">+{{ formatWorkMinutes(workloadStats[resource].exceededMinutes) }}</b> }</small>
+                </button>
+              }
+            </div>
+            <div class="workload-range">
+              <label class="filter-control"><span>FROM DATE</span><input type="date" [(ngModel)]="workloadDateFrom" [max]="workloadDateTo || null" (change)="loadWorkload()" aria-label="From date" /></label>
+              <label class="filter-control"><span>TO DATE</span><input type="date" [(ngModel)]="workloadDateTo" [min]="workloadDateFrom || null" (change)="loadWorkload()" aria-label="To date" /></label>
+              <label class="filter-control"><span>DAY</span><select [ngModel]="workloadDay" (ngModelChange)="selectWorkloadDay($event)" aria-label="Select a day"><option value="">All days</option>@for (day of workloadDaysWithData; track day) { <option [value]="day">{{ day }}</option> }</select></label>
+            </div>
+            <div class="workload-mode" role="group" aria-label="View">
+              <button type="button" [class.selected]="workloadMode === 'chart'" (click)="workloadMode = 'chart'"><i class="fa-solid fa-chart-column" aria-hidden="true"></i>Graph</button>
+              <button type="button" [class.selected]="workloadMode === 'table'" (click)="workloadMode = 'table'"><i class="fa-solid fa-table" aria-hidden="true"></i>Table</button>
+            </div>
           </div>
           <div class="workload-summary">
-            <article><span>AVAILABLE HOURS</span><strong>{{ activityHoursLabel }}</strong><small>Manually logged active time, excluding breaks</small></article>
-            <article><span>BREAK TIME</span><strong>{{ breakHoursLabel }}</strong><small>Break entries for this date</small></article>
-            <article><span>ACTIVITY ENTRIES</span><strong>{{ teamActivities.length }}</strong><small>{{ formatDate(selectedActivityDate) }}</small></article>
+            <article><span>WORKED</span><strong>{{ formatWorkMinutes(selectedWorkloadStats.workedMinutes) }}</strong><small>Excludes break and off-duty Â· standard {{ workdayHours }}h</small></article>
+            <article [class.over-card]="selectedWorkloadStats.exceededMinutes > 0"><span>{{ selectedWorkloadStats.exceededMinutes > 0 ? 'EXCEEDED' : 'WITHIN LIMIT' }}</span><strong>{{ selectedWorkloadStats.exceededMinutes > 0 ? '+' + formatWorkMinutes(selectedWorkloadStats.exceededMinutes) : '0h' }}</strong><small>{{ selectedWorkloadStats.exceededMinutes > 0 ? 'Beyond ' + workdayHours + 'h, summed over each day' : 'No day went beyond ' + workdayHours + ' hours' }}</small></article>
+            <article><span>BREAK</span><strong>{{ formatWorkMinutes(selectedWorkloadStats.breakMinutes) }}</strong><small>{{ selectedWorkloadStats.entries }} entries Â· {{ workloadDay || workloadDateFrom + ' to ' + workloadDateTo }}</small></article>
           </div>
-          <div class="workload-layout">
-            <section class="activity-form-card">
-              <div class="workload-section-heading"><div><h2>Log an activity</h2><p>Enter one time block at a time. Breaks should be logged separately.</p></div></div>
-              <form class="activity-form" (ngSubmit)="saveTeamActivity()">
-                <label><span>ACTIVITY TYPE</span><select name="activityType" [(ngModel)]="activityType" required>@for (type of activityTypes; track type) { <option [value]="type">{{ type }}</option> }</select></label>
-                <label class="activity-details-field"><span>WHAT DID YOU WORK ON?</span><input name="activityDetails" type="text" maxlength="500" [(ngModel)]="activityDetails" placeholder="e.g. Reviewed Batch 2 case requirements" required /></label>
-                <div class="activity-time-fields">
-                  <label><span>FROM</span><input name="startTime" type="time" [(ngModel)]="activityStartTime" required /></label>
-                  <label><span>TO</span><input name="endTime" type="time" [(ngModel)]="activityEndTime" required /></label>
-                </div>
-                <button class="button button-primary" type="submit" [disabled]="activitySaving">{{ activitySaving ? 'Saving...' : 'Save activity' }}</button>
-                <p class="activity-form-hint">Time ranges are for the selected day and cannot overlap another entry.</p>
-              </form>
-            </section>
-            <section class="activity-list-card" aria-label="Activity timeline">
-              <div class="workload-section-heading"><div><h2>{{ selectedTeamMember }}</h2><p>Activity timeline  {{ formatDate(selectedActivityDate) }}</p></div><span class="activity-count">{{ teamActivities.length }} entries</span></div>
-              @if (teamActivities.length) {
-                <div class="activity-timeline">
-                  @for (activity of teamActivities; track activity.ID) {
-                    <article class="activity-entry" [class.break-entry]="activity['Activity Type'] === 'Break'">
-                      <div class="activity-entry-time"><strong>{{ formatActivityTime(activity['Start Time']) }}</strong><span>{{ formatActivityTime(activity['End Time']) }}</span></div>
-                      <span class="activity-marker" aria-hidden="true"></span>
-                      <div class="activity-entry-details"><div><span class="activity-type-badge">{{ activity['Activity Type'] }}</span><strong>{{ formatDuration(activity['Duration Minutes']) }}</strong></div><p>{{ activity.Details }}</p></div>
-                      <button class="activity-delete" type="button" (click)="deleteTeamActivity(activity.ID)" [attr.aria-label]="'Delete ' + activity['Activity Type'] + ' activity'"></button>
-                    </article>
-                  }
-                </div>
-              } @else {
-                <div class="activity-empty"><span aria-hidden="true"></span><strong>No activities logged</strong><p>Start by adding an activity or break for this team member and date.</p></div>
-              }
-            </section>
-          </div>
+          @if (workloadLoading) { <div class="table-state"><span class="loader"></span><span>Loading team workload...</span></div> }
+          @else if (!selectedWorkloadRows.length) { <div class="table-state empty-state"><i class="fa-solid fa-inbox" aria-hidden="true"></i>          <strong>No activities for {{ workloadResource }}</strong><span>Import a workbook, load sample data, or change the date range.</span></div> }
+          @else if (workloadMode === 'chart') {
+            <section class="workload-chart" aria-label="Workload graph">
+              <div class="workload-chart-block">
+                          <div class="trend-head"><h3>Hours worked per day</h3><span class="trend-key"><i class="key-normal"></i>Up to {{ workdayHours }}h<i class="key-over"></i>Exceeded<i class="key-limit"></i>{{ workdayHours }}h limit</span></div>
+                          <div class="trend-chart-area">
+                            <div class="trend-axis">@for (tick of workloadChartTicks; track tick.hours) { <span [style.bottom.%]="tick.pct">{{ tick.hours }}h</span> }</div>
+                            <div class="trend-plot">
+                              @for (tick of workloadChartTicks; track tick.hours) { <i class="trend-grid" [style.bottom.%]="tick.pct"></i> }
+                              <i class="trend-limit" [style.bottom.%]="workloadLimitPct"></i>
+                              <div class="trend-bars">
+                                @for (bar of workloadTrend; track bar.date) {
+                                  <button type="button" class="trend-bar" [class.selected]="workloadDay === bar.date" [class.empty]="!bar.hasData" [disabled]="!bar.hasData" (click)="selectWorkloadDay(workloadDay === bar.date ? '' : bar.date)" [attr.aria-label]="bar.date + ': ' + formatWorkMinutes(bar.minutes) + (bar.exceeded ? ', exceeded by ' + formatWorkMinutes(bar.exceeded) : '')" [title]="bar.date + ' Â· ' + formatWorkMinutes(bar.minutes) + (bar.exceeded ? ' (+' + formatWorkMinutes(bar.exceeded) + ' over)' : '')">
+                                    <span class="bar-value" [class.over]="bar.exceeded > 0">{{ bar.hasData ? formatWorkMinutes(bar.minutes) : '' }}</span>
+                                    <span class="bar-stack" [style.height.%]="bar.normalPct + bar.overPct"><i class="bar-over" [style.flex-grow]="bar.overPct"></i><i class="bar-normal" [style.flex-grow]="bar.normalPct"></i></span>
+                                    <span class="bar-label">{{ bar.label }}</span>
+                                  </button>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                          <p class="trend-hint">Click a day to load its activities.</p>
+              </div>
+                        @if (workloadDay) {
+                          <div class="workload-chart-block">
+                            <h3>{{ workloadDay }} Â· 24-hour timeline</h3>
+                            <div class="workload-timeline">@for (block of workloadTimeline; track $index) { <i [style.left.%]="block.left" [style.width.%]="block.width" [style.background]="block.color" [title]="block.title"></i> }</div>
+                            <div class="workload-hours"><span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span></div>
+                            <div class="workload-legend">@for (item of workloadLegend; track item.type) { <span><i [style.background]="item.color"></i>{{ item.type }}</span> }</div>
+                          </div>
+                        }
+                        <div class="workload-chart-block">
+                          <h3>Hours by activity type</h3>
+                          @for (item of workloadByType; track item.type) {
+                            <div class="workload-type-row"><span>{{ item.type }}</span><div><i [style.width.%]="item.pct" [style.background]="item.color"></i></div><strong>{{ formatWorkMinutes(item.minutes) }}</strong></div>
+                          }
+                        </div>
+                      </section>
+                    } @else {
+                      <section class="table-frame workload-table-frame" aria-label="Workload table">
+                        <table class="workload-table"><thead><tr><th class="col-date">Date</th><th class="col-time">From â€“ To</th><th class="col-type">Activity Type</th><th>What did you work on</th><th class="col-hours">Hours</th></tr></thead><tbody>@for (row of selectedWorkloadRows; track row.id) { <tr [class.non-work-row]="!isWorkloadWork(row['Activity Type'])"><td>{{ row.Date }}</td><td>{{ row.From }} â€“ {{ row.To }}</td><td><span class="workload-type-chip" [style.background]="workloadColor(row['Activity Type'])"></span>{{ row['Activity Type'] }}</td><td>{{ row['What did you work on'] }}</td><td>{{ workloadRowHours(row) }}</td></tr> }</tbody></table>
+                      </section>
+                    }
         </section>
       }
 
-      @if (!dashboardView && !teamWorkloadView) {
-      <section class="results-section" [attr.aria-label]="riskSummaryView ? 'Risk summary records' : 'Salesforce case records'">
-        <div class="results-heading"><div class="results-title"><h2>{{ riskSummaryView ? 'Risk items' : 'Cases' }}</h2><span class="result-count">{{ total.toLocaleString() }}</span><span class="results-context">records</span></div><div class="results-tools"><span class="table-updated"><span class="refresh-mark" aria-hidden="true"></span> Synced with database</span><button class="icon-button" type="button" title="Refresh results" aria-label="Refresh results" (click)="loadMetrics()"><span class="refresh-mark" aria-hidden="true"></span></button></div></div>
+      @if (!teamWorkloadView && (!dashboardView || dashboardGridSelection)) {
+      <section #resultsSection class="results-section" [class.dashboard-grid-results]="dashboardView" [attr.aria-label]="riskSummaryView ? 'Risk summary records' : 'Salesforce case records'">
+        <div class="results-heading"><div class="results-title"><h2>{{ riskSummaryView ? 'Risk items' : 'Cases' }}</h2><span class="result-count">{{ displayedTotal.toLocaleString() }}</span><span class="results-context">{{ dashboardGridContext || 'records' }}</span></div><div class="results-tools"><span class="table-updated"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced with database</span>@if (dashboardView) { <div class="page-view-actions"><button #dashboardCaseToggle type="button" role="switch" class="quick-filter-button risk-toggle dashboard-case-toggle" [class.risk-active]="dashboardCaseState === 'closed'" [attr.aria-checked]="dashboardCaseState === 'closed'" [attr.aria-label]="'Open ' + dashboardOpenCount + ' cases; closed ' + dashboardClosedCount + ' cases'" (click)="toggleDashboardCaseState()"><span class="risk-toggle-track"><span class="risk-toggle-thumb" aria-hidden="true"></span><span class="risk-toggle-option" [class.active]="dashboardCaseState === 'open'">OPEN ({{ dashboardOpenCount }})</span><span class="risk-toggle-option" [class.active]="dashboardCaseState === 'closed'">CLOSE ({{ dashboardClosedCount }})</span></span></button></div><button class="icon-button" type="button" title="Reset chart drilldown and case state" aria-label="Reset chart drilldown and case state" (click)="clearDashboardBarSelection()"><i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i></button><button class="text-button" type="button" (click)="scrollToDashboard()" aria-label="Scroll back to dashboard"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> Back to charts</button><button class="text-button" type="button" (click)="clearDashboardBarSelection()">Show all cases</button> }<button class="icon-button" type="button" title="Refresh results" aria-label="Refresh results" (click)="loadMetrics(true)"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></button></div></div>
         <div class="table-frame">
           @if (loading) {
             <div class="table-state"><span class="loader"></span><span>{{ riskSummaryView ? 'Loading risk data...' : 'Loading case data...' }}</span></div>
-          } @else if (rows.length === 0) {
-            <div class="table-state empty-state"><span class="empty-mark" aria-hidden="true"></span><strong>{{ riskSummaryView ? 'No risks to show' : 'No cases to show' }}</strong><span>{{ databaseState === 'disconnected' ? 'Start PostgreSQL and the API, then check your connection settings.' : riskSummaryView ? 'The current data has no items tagged ORCA Scan, Pentest 2026, or ZeroThreat.' : 'Import a DevOps workbook or adjust your filters.' }}</span><button class="text-button" type="button" (click)="chooseFile()">Import a workbook <span aria-hidden="true"></span></button></div>
+          } @else if (displayedRows.length === 0) {
+            <div class="table-state empty-state"><i class="fa-solid fa-box-open" aria-hidden="true"></i><strong>{{ riskSummaryView ? 'No risks to show' : 'No cases to show' }}</strong><span>{{ databaseState === 'disconnected' ? 'Start PostgreSQL and the API, then check your connection settings.' : riskSummaryView ? 'The current data has no items tagged ORCA Scan, Pentest 2026, or ZeroThreat.' : 'Import a DevOps workbook or adjust your filters.' }}</span><button class="text-button" type="button" (click)="chooseFile()">Import a workbook <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div>
           } @else {
             <div class="table-scroll"><table>
-              <thead><tr>@for (column of columns; track column) { <th scope="col">{{ column === 'Age' || column === 'Resolution' ? column + ' (days)' : column }}</th> }</tr></thead>
-              <tbody>@for (row of rows; track row['ID']) { <tr>
+              <thead><tr>@for (column of columns; track column) { <th scope="col"><span class="column-header-content"><span>{{ column === 'Age' || column === 'Resolution' ? column + ' (days)' : column }}</span>@if (column === 'ID' || column === 'Salesforce ID') { <button type="button" class="copy-column-button" [attr.aria-label]="'Copy all ' + column + ' values'" [title]="'Copy all ' + column + ' values'" (click)="copyColumnValues(column)" [disabled]="!displayedRows.length"><i class="fa-solid fa-copy" aria-hidden="true"></i></button> }</span></th> }</tr></thead>
+              <tbody>@for (row of displayedRows; track row['ID']) { <tr>
                 @for (column of columns; track column) {
-                  <td [class.title-cell]="column === 'Title'" [class.id-cell]="column === 'ID' || column === 'Salesforce ID'">
-                    @if (column === 'ID' && devOpsWorkItemUrl(row[column]); as workItemUrl) { <a class="record-link devops-id-link" [href]="workItemUrl" target="_blank" rel="noopener noreferrer">{{ row[column] }}</a> }
+                  <td [class.title-cell]="column === 'Title'" [class.id-cell]="column === 'ID' || column === 'Salesforce ID'" [class.tags-cell]="column === 'Tags'">
+                    @if ((column === 'Salesforce ID' || column === 'Site ID') && !hasSalesforceId(row)) { N/A }
+                    @else if (column === 'ID' && devOpsWorkItemUrl(row[column]); as workItemUrl) { <a class="record-link devops-id-link" [href]="workItemUrl" target="_blank" rel="noopener noreferrer">{{ row[column] }}</a> }
                     @else if (column === 'Salesforce ID' && salesforceCaseUrl(row[column]); as caseUrl) { <a class="record-link" [href]="caseUrl" target="_blank" rel="noopener noreferrer">{{ row[column] }}</a> }
                     @else if (column === 'Assigned To') { {{ displayAssignedTo(row[column]) }} }
-                    @else if (column === 'Tags') { @for (badge of tagBadges(row[column]); track badge.label) { <span class="priority-pill" [style.backgroundColor]="badge.backgroundColor">{{ badge.label }}</span> } }
+                    @else if (column === 'Tags') { <span class="tag-tooltip" [attr.data-tooltip]="tagTooltip(row[column])" tabindex="0" [attr.aria-label]="tagTooltip(row[column])">@for (badge of displayTagBadges(row[column]); track badge.label) { <span class="priority-pill tag-pill" [style.backgroundColor]="badge.backgroundColor">{{ badge.label }}</span> } @if (hasHiddenTags(row[column])) { <span class="tag-more" aria-hidden="true">...</span> }</span> }
                     @else if (column === 'Priority') { <span class="priority-pill" [class]="'priority-pill ' + priorityClass(row[column])">{{ row[column] ?? 'Medium' }}</span> }
                     @else if (column === 'Age') { <span class="age-badge" [class]="'age-badge ' + ageClass(row[column])">{{ row[column] ?? '-' }}</span> }
                     @else if (column === 'State' && row[column] !== null) { <span class="state-value"><span class="state-dot" [class.state-closed]="isClosed(row[column])"></span>{{ row[column] }}</span> }
@@ -627,7 +792,7 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
             </table></div>
           }
         </div>
-        <div class="table-footer"><span>Showing <strong>{{ rows.length.toLocaleString() }}</strong> of <strong>{{ total.toLocaleString() }}</strong> matching items</span><span class="footer-status"><span></span>PostgreSQL</span></div>
+        <div class="table-footer"><span>Showing <strong>{{ displayedTotal.toLocaleString() }}</strong> of <strong>{{ displayedTotal.toLocaleString() }}</strong> matching items</span><span class="footer-status"><span></span>PostgreSQL</span></div>
       </section>
       }
       <footer class="page-footer"><span>CASEPULSE <span></span> {{ riskSummaryView ? 'RISK SUMMARY' : 'SALESFORCE CASE TRACKER' }}</span><span>Data stays in your PostgreSQL database</span></footer>
@@ -635,3 +800,6 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
     </div>
   </main>
 </div>
+} @else {
+<router-outlet />
+}
