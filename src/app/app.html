@@ -1,67 +1,44 @@
 <!--Addyzoe@135791-->
-@if (auth.isLoggedIn()) {
 <div class="workspace">
 
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="CasePulse home">
       <span class="brand-mark"><span></span><span></span><span></span></span>
-      <span class="brand-name">Case<span>Pulse</span></span>
+      <span class="brand-name">e<span>P</span>x Case<span>Pulse</span></span>
     </a>
     <div class="workspace-label">ePx</div>
     <nav aria-label="Main navigation">
-      @if (auth.can('cases')) {
-      <a class="nav-item" [class.active]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView && !accessView" routerLink="/" [attr.aria-current]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView && !accessView ? 'page' : null">
+      <a class="nav-item" [class.active]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView" routerLink="/" [attr.aria-current]="!dashboardView && !teamWorkloadView && !riskSummaryView && !documentationView && !reportsView && !categoriesView && !liveDataView && !monitoringView ? 'page' : null">
         <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
         <span>Salesforce Case Tracker</span>
       </a>
-      }
-      @if (auth.can('live-data')) {
       <a class="nav-item" [class.active]="liveDataView" routerLink="/live-data" [attr.aria-current]="liveDataView ? 'page' : null">
         <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i><span>Live Data</span>
       </a>
-      }
-      @if (auth.can('dashboard')) {
       <a class="nav-item" [class.active]="dashboardView" routerLink="/dashboard" [attr.aria-current]="dashboardView ? 'page' : null">
         <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
         <span>Dashboard</span>
       </a>
-      }
-      @if (auth.can('team-workload')) {
       <a class="nav-item" [class.active]="teamWorkloadView" routerLink="/team-workload" [attr.aria-current]="teamWorkloadView ? 'page' : null">
         <i class="fa-solid fa-users" aria-hidden="true"></i>
         <span>Capacity</span>
       </a>
-      }
-      @if (auth.can('categories')) {
       <a class="nav-item" [class.active]="categoriesView" routerLink="/categories" [attr.aria-current]="categoriesView ? 'page' : null">
         <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
         <span>Categories</span>
       </a>
-      }
-      @if (auth.can('documentation')) {
       <a class="nav-item" [class.active]="documentationView" routerLink="/documentation" [attr.aria-current]="documentationView ? 'page' : null">
         <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
         <span>Documentation</span>
       </a>
-      }
-      @if (auth.can('monitoring')) {
       <a class="nav-item" [class.active]="monitoringView" routerLink="/monitoring" [attr.aria-current]="monitoringView ? 'page' : null">
         <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
         <span>Monitoring</span>
       </a>
-      }
-      @if (auth.can('reports')) {
       <a class="nav-item" [class.active]="reportsView" routerLink="/reports" [attr.aria-current]="reportsView ? 'page' : null">
         <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
         <span>Reports</span>
       </a>
-      }
-      @if (auth.can('access-management')) {
-      <a class="nav-item" [class.active]="accessView" routerLink="/access" [attr.aria-current]="accessView ? 'page' : null">
-        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
-        <span>Access Management</span>
-      </a>
-      }
     </nav>
     <div class="sidebar-bottom">
       <div class="database-card">
@@ -69,7 +46,6 @@
         <strong>{{ databaseState === 'connected' ? 'Connected' : databaseState === 'checking' ? 'Checking connection' : 'Not connected' }}</strong>
         <span class="database-caption">{{ databaseState === 'connected' ? 'case_insights' : 'Configure your local database' }}</span>
       </div>
-      <div class="sidebar-foot"><span class="avatar">{{ auth.user()?.displayName?.slice(0, 2)?.toUpperCase() }}</span><span><strong>{{ auth.user()?.displayName }}</strong><small>{{ auth.user()?.role }}</small></span><button type="button" class="more" aria-label="Sign out" title="Sign out" (click)="auth.logout()"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></button></div>
     </div>
   </aside>
 
@@ -80,7 +56,6 @@
     </header>
     <div class="page-content">
       @if (liveDataView) { <app-live-data /> }
-      @if (accessView) { <app-access /> }
       @if (documentationView) {
       <section class="page-heading documentation-heading">
         <div><div class="eyebrow"><span class="eyebrow-line"></span>OPERATIONS GUIDE</div><h1>Deployment documentation</h1><p class="page-subtitle">A step-by-step guide to prepare an Amazon EC2 server, configure PostgreSQL, publish the CasePulse frontend, and keep the API running.</p></div>
@@ -185,11 +160,11 @@ nano .env</code></pre>
 PGHOST=127.0.0.1
 PGPORT=5432
 PGDATABASE=casepulse
-PGUSER=casepulse_app
-PGPASSWORD=REPLACE_WITH_YOUR_STRONG_DATABASE_PASSWORD
+PGUSER=KasagalaD
+PGPASSWORD=YOUR_DATABASE_PASSWORD
 PGSSL=false
 PGSCHEMA=DevOps_SF_Summary
-CORS_ORIGIN=https://YOUR_APP_DOMAIN</code></pre>
+CORS_ORIGIN=https://LOCALHOST:3000</code></pre>
             <p>For temporary testing over HTTP, use <code>http://YOUR_EC2_PUBLIC_DNS</code> as the origin and change it to the final HTTPS origin when configured. Keep PostgreSQL bound to localhost. Lock down the file and verify ownership:</p>
             <pre><code>chmod 600 /opt/casepulse/app/.env
 chown ec2-user:ec2-user /opt/casepulse/app/.env</code></pre>
@@ -800,6 +775,3 @@ sudo tail -n 100 /var/log/nginx/error.log</code></pre>
     </div>
   </main>
 </div>
-} @else {
-<router-outlet />
-}

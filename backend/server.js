@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 
 const cors = require('cors');
 const crypto = require('node:crypto');
@@ -7,9 +7,8 @@ const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
 const path = require('node:path');
 const { Pool } = require('pg');
-const { createAuth } = require('./auth');
 
-const PORT = Number(process.env.API_PORT || 3000);
+const PORT = Number(process.env.API_PORT || process.env.PORT || 3000);
 const IMPORT_COLUMNS = [
   'Work Item Type',
   'ID',
@@ -171,9 +170,25 @@ const pool = new Pool({
 const app = express();
 let schemaReady = false;
 let schemaPromise;
-const auth = createAuth({ pool, ensureSchema: () => ensureSchema() });
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:4200' }));
+const DEFAULT_CORS_ORIGINS = [
+  'http://localhost:4200',
+  'http://case-pulse.s3-website.ap-south-1.amazonaws.com',
+];
+const allowedOrigins = String(process.env.CORS_ORIGIN || DEFAULT_CORS_ORIGINS.join(','))
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json({ limit: '15mb' }));
 
 async function ensureSchema() {
@@ -181,7 +196,6 @@ async function ensureSchema() {
   if (!schemaPromise) {
     schemaPromise = fs.readFile(path.join(__dirname, 'schema.sql'), 'utf8')
       .then((schema) => pool.query(schema))
-      .then(() => auth.setup())
       .then(() => { schemaReady = true; })
       .finally(() => { schemaPromise = undefined; });
   }
@@ -354,12 +368,6 @@ app.get('/api/health', async (_request, response) => {
     response.status(503).json({ status: 'error', database: 'disconnected', error: databaseErrorMessage(error) });
   }
 });
-
-// Everything below this point requires a signed-in user; login and health stay public.
-app.use('/api/auth', auth.router);
-app.use('/api', auth.authenticate);
-app.use('/api/admin', auth.admin);
-app.use('/api', auth.routeGuard);
 
 app.get('/api/live-data', async (_request, response) => {
   const config = azureDevOpsConfig();
@@ -837,4 +845,14 @@ app.post('/api/team-workload/import', async (request, response) => {
   }
 });
 
-app.listen(PORT, () => console.log(`DevOps metrics API listening on http://localhost:${PORT}`));
+const server = app.listen(PORT, () => {
+  console.log(`DevOps metrics API listening on http://localhost:${PORT}`);
+});
+
+server.on('error', (error) => {
+  console.error('Failed to start API server:', error);
+  process.exitCode = 1;
+});
+
+
+

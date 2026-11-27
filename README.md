@@ -4,7 +4,7 @@ An Angular dashboard and Node.js API for importing DevOps work-item exports into
 
 ## Requirements
 
-- Node.js 20.19+ and npm
+- Node.js supported by the installed Angular version (currently 22.22.3+, 24.15.0+, or 26+) and npm
 - A PostgreSQL server and a database/user allowed to create and migrate the `DevOps_SF_Summary.case_insights` table
 
 ## Configure and run
@@ -12,9 +12,11 @@ An Angular dashboard and Node.js API for importing DevOps work-item exports into
 1. Copy `.env.example` to `.env` and set `PGDATABASE`, `PGUSER`, and `PGPASSWORD` for your local PostgreSQL instance.
 2. Run `npm install` from the project root.
 3. Run `npm run dev`.
-4. Open `http://localhost:4200`. The API listens on port 3000 and creates the table on its first database connection.
+4. Open the URL printed by the Angular dev server (normally `http://localhost:4200`). The dev proxy forwards `/api` to the configured API port, normally 3000. The API initializes the schema on its first database connection.
 
-For an EC2 deployment walkthrough, including the recommended folder layout, package installation commands, PostgreSQL setup, systemd service, Nginx proxy, HTTPS, and operational checks, open the **Documentation** tab in the application's left navigation.
+The application has no login or role checks. Anyone who can reach the API can read and modify data; CORS is not an access control. Restrict both the frontend and API with an approved network boundary or gateway.
+
+`npm run build` produces static files in `dist/case-pulse/browser` and a Node API package in `dist/backend`. The frontend's `api-config.js` can be edited after building to point at a deployed API; leave it empty for the local or same-origin proxy. S3 cannot run the API. See `deployment_steps.txt` for deployment, configuration, and verification. For a single-server EC2 walkthrough, open the **Documentation** tab in the application's left navigation.
 
 The CasePulse dashboard tracks Salesforce cases in the PostgreSQL table `DevOps_SF_Summary.case_insights`. On first API connection after upgrading, the existing `Deployment_Metrics` table is renamed to `case_insights` to preserve its data. The database and API store `Created Date` / `Created Time` and `Closed Date` / `Closed Time` separately; date/time parts are split from workbook timestamps in India Standard Time (IST). CSV and XLSX imports/exports retain the original 14 DevOps workbook headers and order. Import accepts `.csv` and `.xlsx` files whose header row exactly matches all 14 columns. CSV files must have exactly 14 columns per row.
 

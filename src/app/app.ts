@@ -1,10 +1,8 @@
 import { HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { ChangeDetectorRef, Component, computed, DestroyRef, effect, ElementRef, inject, signal, untracked, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, ElementRef, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AuthService } from './auth/auth.service';
-import { AccessComponent } from './features/access/access.component';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { parseCsv } from './csv';
@@ -201,8 +199,6 @@ const monthlyAxisMaximum = (points: { count: number }[]) => (
     FormsModule,
     NgClass,
     RouterLink,
-    RouterOutlet,
-    AccessComponent,
     LiveDataComponent,
     CategoriesComponent,
     ReportsComponent,
@@ -217,8 +213,6 @@ export class App {
   @ViewChild('fileInput') private fileInput?: ElementRef<HTMLInputElement>;
   @ViewChild('resultsSection') private resultsSection?: ElementRef<HTMLElement>;
   @ViewChild('dashboardCaseToggle') private dashboardCaseToggle?: ElementRef<HTMLButtonElement>;
-  readonly auth = inject(AuthService);
-  private workspaceStarted = false;
   private readonly activePage = signal<WorkspacePage>('cases');
   private readonly pageFlags = computed(() => {
     const page = this.activePage();
@@ -231,7 +225,6 @@ export class App {
       categoriesView: page === 'categories',
       liveDataView: page === 'live-data',
       monitoringView: page === 'monitoring',
-      accessView: page === 'access-management',
     };
   });
 
@@ -290,7 +283,6 @@ export class App {
   get categoriesView(): boolean { return this.pageFlags().categoriesView; }
   get liveDataView(): boolean { return this.pageFlags().liveDataView; }
   get monitoringView(): boolean { return this.pageFlags().monitoringView; }
-  get accessView(): boolean { return this.pageFlags().accessView; }
   readonly monitoringModules = MONITORING_MODULES;
   readonly monitoringColumns = MONITORING_COLUMNS;
   monitoringModule = '';
@@ -413,17 +405,11 @@ export class App {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       takeUntilDestroyed(destroyRef),
     ).subscribe(() => this.activatePageFromRoute());
-    if (this.auth.isLoggedIn()) this.startWorkspace();
-    effect(() => {
-      if (this.auth.isLoggedIn()) untracked(() => this.startWorkspace());
-      else this.workspaceStarted = false;
-    });
+    this.startWorkspace();
   }
 
-  /** Starts the data loads once per sign-in; protected APIs need the token, so this waits for login. */
+  /** Starts the workspace data loads. */
   private startWorkspace(): void {
-    if (this.workspaceStarted) return;
-    this.workspaceStarted = true;
     this.checkDatabase();
     this.loadMetrics();
     setTimeout(() => this.warmRiskSummaryCache(), 500);

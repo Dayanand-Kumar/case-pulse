@@ -1,9 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { AuthService } from './auth/auth.service';
 import { parseCsv } from './csv';
 import { routes } from './app.routes';
 
@@ -37,10 +36,6 @@ describe('App', () => {
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter(routes)],
     }).compileComponents();
     httpTesting = TestBed.inject(HttpTestingController);
-    TestBed.inject(AuthService).setSession('test-token', {
-      id: 1, username: 'tester', displayName: 'Tester', role: 'admin',
-      permissions: ['cases', 'dashboard', 'risk-summary', 'team-workload', 'categories', 'documentation', 'reports', 'monitoring', 'live-data', 'access-management', 'data-import'],
-    });
   });
 
   afterEach(() => {
@@ -53,6 +48,30 @@ describe('App', () => {
     httpTesting.expectOne('/api/health').flush({ status: 'ok', database: 'connected' });
     httpTesting.expectOne('/api/metrics').flush({ items: [], total: 0 });
     expect(app).toBeTruthy();
+  });
+
+  it('opens the workspace and loads data without a login', () => {
+    const fixture = TestBed.createComponent(App);
+    const health = httpTesting.expectOne('/api/health');
+    expect(health.request.headers.has('Authorization')).toBe(false);
+    health.flush({ status: 'ok', database: 'connected' });
+    httpTesting.expectOne('/api/metrics').flush({ items: [], total: 0 });
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('h1')?.textContent).toContain('Case Tracker');
+    expect(page.querySelector('a[href="/monitoring"]')).toBeTruthy();
+    expect(page.querySelector('a[href="/access"]')).toBeNull();
+    expect(page.querySelector('app-login')).toBeNull();
+  });
+
+  it('navigates to a workspace page without a login', async () => {
+    const fixture = TestBed.createComponent(App);
+    httpTesting.expectOne('/api/health').flush({ status: 'ok', database: 'connected' });
+    httpTesting.expectOne('/api/metrics').flush({ items: [], total: 0 });
+    await TestBed.inject(Router).navigateByUrl('/documentation');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1')?.textContent).toContain('Deployment documentation');
   });
 
   it('should render the metrics workspace', async () => {

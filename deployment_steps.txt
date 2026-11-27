@@ -1,0 +1,151 @@
+CASEPULSE DEPLOYMENT
+====================
+
+Architecture and security
+-------------------------
+Angular is a static website. Node.js is a separate, long-running Express API;
+static hosts such as S3 cannot execute it. PostgreSQL is a third service.
+Uploading the backend package to S3 will not start the API. Your S3 website
+currently has no API at /api/health. It cannot retrieve data until a Node
+host is deployed and its reachable URL is configured.
+
+There is no application login or role restriction. Anyone who can reach the
+API can read and change data, including imports and deletes. Restrict BOTH the
+website and the API using an approved VPN, private network, or authenticated
+gateway before using sensitive data. HTTPS and CORS alone do not provide
+access control. Keep PostgreSQL private, back it up, and do not publish .env.
+
+1. Prepare PostgreSQL and the Node API
+-------------------------------------
+Use an API host that runs persistent Node processes, such as a private EC2
+instance, container service, or Node hosting provider. Use Node.js supported
+by the installed Angular version (currently 22.22.3+, 24.15.0+, or 26+) and
+npm. Set up a PostgreSQL database and user. The user must be allowed to run
+the schema migration and access the application's tables.
+
+Build on your development machine first:
+
+  npm run build
+
+Copy the contents of dist/backend to a private directory on the API host, for
+example /opt/casepulse/api. Do not copy it to a public S3 website bucket.
+On the API host, in that directory:
+
+  npm install --omit=dev
+  nano .env
+  chmod 600 .env
+
+Set API_PORT (for example 3000), PGHOST, PGPORT, PGDATABASE, PGUSER and
+PGPASSWORD to your actual database settings. Use PGSSL=true and configure
+PGSSLROOTCERT when your remote PostgreSQL provider requires verified TLS.
+PGHOST=localhost on the API host means that host itself, not your development
+computer. The API host must have network access to the actual database.
+Set CORS_ORIGIN to the exact browser origin, with no path or trailing slash.
+For your current S3 website:
+
+  CORS_ORIGIN=http://case-pulse.s3-website.ap-south-1.amazonaws.com
+
+Use the HTTPS browser origin instead if you later use CloudFront and HTTPS.
+Multiple allowed origins can be separated by commas. Set Azure DevOps
+configuration only if the Live Data feature is needed. Keep all credentials
+on the API host; the generated backend package contains no .env file.
+
+Start the API with:
+
+  npm start
+
+The Node port is internal to the API host/network. Put an HTTPS reverse proxy
+or load balancer in front of it. For example, an HTTPS API origin
+https://api.example.com can forward /api/* to the Node process on port 3000,
+preserving the /api prefix. Restrict the Node port to that proxy or load
+balancer and keep PostgreSQL's port inaccessible from the internet. Configure
+the host firewall/security groups accordingly. Use a process manager such as
+systemd to restart the API after failures and machine restarts; the service's
+working directory must be the backend package directory so .env is loaded.
+
+Example systemd service (replace paths, user and Node executable):
+
+  [Unit]
+  Description=CasePulse API
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=casepulse
+  WorkingDirectory=/opt/casepulse/api
+  Environment=NODE_ENV=production
+  ExecStart=/usr/bin/node /opt/casepulse/api/server.js
+  Restart=on-failure
+
+  [Install]
+  WantedBy=multi-user.target
+
+Save as /etc/systemd/system/casepulse-api.service, ensure the service user can
+read the backend package and .env, then run:
+
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now casepulse-api
+  sudo systemctl status casepulse-api --no-pager
+  curl -fsS http://127.0.0.1:3000/api/health
+
+Use the configured API_PORT in the health URL. The first health or data
+request runs schema.sql. Back up the database and review migrations
+before upgrading; the Risk Summary migration can recreate its table if its
+columns do not match the required workbook schema.
+
+2. Configure and build Angular
+------------------------------
+Run the following on the build machine, from the project root:
+
+  npm ci
+  npm run build
+  npm run check:api
+
+In dist/case-pulse/browser/api-config.js:
+
+  * For a gateway serving the static website and forwarding /api/* to the
+    Node API on the SAME origin, leave CASEPULSE_API_URL empty.
+  * For your S3 website and a separate Node API, set CASEPULSE_API_URL to the
+    real API origin, e.g. 'https://api.example.com'. The application appends
+    /api. A URL ending in /api also works.
+
+Do not use localhost for the deployed API URL: in the browser it refers to
+the visitor's own computer. Do not mix an HTTPS website with an HTTP API.
+The API URL is public configuration, not a place for credentials. Re-upload
+api-config.js and invalidate browser/CDN caches after changing it. The source
+default is public/api-config.js; a later build overwrites the dist copy.
+
+The deployable frontend is dist/case-pulse/browser. Upload its CONTENTS, not
+the project, backend, node_modules or .env, to the static host. The separately
+generated dist/backend is for the Node host only.
+
+3. Publish the static website
+-----------------------------
+Point your static host's document root at the browser build directory and
+serve index.html as the default page. Configure an SPA fallback so direct
+requests and refreshes for Angular routes such as /dashboard return index.html;
+do not rewrite /api requests to index.html if using a same-origin API proxy.
+Publish over HTTPS, and invalidate cached assets/index.html after updates.
+
+Example AWS setup: use a private S3 bucket as a CloudFront origin with Origin
+Access Control, upload the browser directory, set index.html as the default
+root object, and configure 403/404 fallback to /index.html with HTTP 200 for
+SPA navigation. This example uses a SEPARATE HTTPS API origin, not an API
+CloudFront origin; configure CASEPULSE_API_URL and CORS_ORIGIN as above.
+Follow AWS guidance to restrict website and API access to authorized users
+or networks. An S3 bucket alone does not run Node.js.
+
+4. Verify
+---------
+  * Open https://api.example.com/api/health from an approved network and
+    confirm HTTP 200 with database=connected.
+  * Open the website, reload /dashboard directly, and check the database badge.
+  * In browser developer tools, confirm requests go to the intended /api
+    endpoint and succeed. Check the browser console for CORS or mixed-content
+    errors and API service logs for database errors.
+  * Test an approved workbook import/export and confirm data persists. The
+    exact workbook column names and order must not be changed.
+
+For local development, npm run dev starts Angular and Node. Open the URL
+printed by Angular. Its development proxy forwards /api to API_PORT, so the
+browser does not need to access the Node port directly.

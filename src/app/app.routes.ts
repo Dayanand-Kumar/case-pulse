@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { loginGuard, pageGuard } from './auth/auth.guard';
-import { LoginComponent } from './features/login/login.component';
 
 export type WorkspacePage =
   | 'cases'
@@ -11,8 +9,7 @@ export type WorkspacePage =
   | 'documentation'
   | 'reports'
   | 'monitoring'
-  | 'live-data'
-  | 'access-management';
+  | 'live-data';
 
 export const workspacePagePaths: Record<WorkspacePage, string> = {
   cases: '/',
@@ -24,20 +21,17 @@ export const workspacePagePaths: Record<WorkspacePage, string> = {
   reports: '/reports',
   monitoring: '/monitoring',
   'live-data': '/live-data',
-  'access-management': '/access',
 };
 
-/** Builds a guarded workspace route; the guard checks sign-in and the page permission. */
+/** Builds a workspace route with its page metadata. */
 const page = (path: string, workspacePage: WorkspacePage, pathMatch?: 'full') => ({
   path,
   ...(pathMatch ? { pathMatch } : {}),
   children: [],
-  canActivate: [pageGuard],
   data: { workspacePage },
 });
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   page('', 'cases', 'full'),
   page('dashboard', 'dashboard'),
   page('risk-summary', 'risk-summary'),
@@ -47,6 +41,5 @@ export const routes: Routes = [
   page('reports', 'reports'),
   page('monitoring', 'monitoring'),
   page('live-data', 'live-data'),
-  page('access', 'access-management'),
   { path: '**', redirectTo: '' },
 ];
