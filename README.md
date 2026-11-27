@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CasePulse | Salesforce Case Tracker
 
 An Angular dashboard and Node.js API for importing DevOps work-item exports into local PostgreSQL, filtering them, and exporting the matching rows back to Excel.
@@ -41,3 +42,7 @@ The database schema is in `backend/schema.sql`.
 The Team workload page supports Tuta Mahesh, Madala Koteswar Rao, and Dayanand Kumar K. Select a member and date to see the activity timeline and totals. Add one activity per time block, selecting a suggested type and entering a short description, start time, and end time. Use a separate `Break` entry for breaks. Activity hours total the non-break entries; break time is shown separately. These are manually logged hours, not an automatic attendance or scheduled-availability calculation. Entries for the same person and date cannot overlap, and time blocks must start and end on the selected day.
 
 Team workload entries persist in `DevOps_SF_Summary.team_activities`. The API provides `GET /api/team-activities?member=...&date=YYYY-MM-DD`, `POST /api/team-activities`, and `DELETE /api/team-activities/:id`.
+=======
+# case-pulse
+Ticket Segregation &amp; Tracker
+>>>>>>> 485179ebd17235c24079d48dc79037a000e78c5d
